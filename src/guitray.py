@@ -1,4 +1,4 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui,QtCore
 import sys
 import os
 import logging
@@ -8,6 +8,7 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.logger = logger
 
         self.logger.cache.onsyncfail = self.onsyncfail
+        self.logger.cache.onsync = self.onsyncsuccess
 
         #Load the icons
         mydir = os.path.dirname(__file__)
@@ -15,10 +16,10 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.gathericon = QtGui.QIcon(os.path.join(mydir, 'resources/gatheringicon.png'))
         self.failicon = QtGui.QIcon(os.path.join(mydir,"resources/failicon.png"))
 
-        curicon = self.idleicon
+        self.curicon = self.idleicon
         if self.logger.cache.syncthread is not None:
-            curicon = self.gathericon
-        super(MainTray,self).__init__(curicon,parent)
+            self.curicon = self.gathericon
+        super(MainTray,self).__init__(self.curicon,parent)
 
         self.menu = QtGui.QMenu()
 
@@ -36,6 +37,15 @@ class MainTray(QtGui.QSystemTrayIcon):
         exitAction.triggered.connect(self.exitButtonPressed)
 
         self.setContextMenu(self.menu)
+
+        #Now set up the icon updating timer
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.setcuricon)
+        self.timer.start(1000)
+    def setcuricon(self):
+        self.setIcon(self.curicon)
+
+
     def exitButtonPressed(self):
         sys,exit(0)
 
@@ -52,12 +62,21 @@ class MainTray(QtGui.QSystemTrayIcon):
 
     def onsyncfail(self,c):
         # Set the icon to red
-        self.setIcon(self.failicon)
+        self.curicon = self.failicon
+        logging.info("SYNC FAIL: "+str(c))
+    def onsyncsuccess(self):
+        logging.info("SYNC SUCCESS")
+        # Set the icon to the correct value upon synchronization
+        if self.gatherAction.isChecked():
+            self.curicon = self.gathericon
+        else:
+            self.curicon = self.idleicon
 
     def start(self):
         logging.info("Start logging")
+        self.curicon = self.gathericon
         # Set the icon to green
-        self.setIcon(self.gathericon)
+        self.setIcon(self.curicon)
 
         # Start the actual logger
         self.logger.start()
@@ -71,7 +90,8 @@ class MainTray(QtGui.QSystemTrayIcon):
     def stop(self):
         logging.info("Stop logging")
         # Set the icon to idle
-        self.setIcon(self.idleicon)
+        self.curicon = self.idleicon
+        self.setIcon(self.curicon)
 
         # set the check box correctly
         self.gatherAction.setChecked(False)
