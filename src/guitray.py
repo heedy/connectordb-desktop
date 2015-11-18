@@ -3,6 +3,25 @@ import sys
 import os
 import logging
 import threading
+import time
+import datetime
+
+# https://gist.github.com/thatalextaylor/7408395
+def pretty_time_delta(seconds):
+    sign_string = '-' if seconds < 0 else ''
+    seconds = abs(int(seconds))
+    days, seconds = divmod(seconds, 86400)
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+    if days > 0:
+        return '%s%dd%dh%dm%ds' % (sign_string, days, hours, minutes, seconds)
+    elif hours > 0:
+        return '%s%dh%dm%ds' % (sign_string, hours, minutes, seconds)
+    elif minutes > 0:
+        return '%s%dm%ds' % (sign_string, minutes, seconds)
+    else:
+        return '%s%ds' % (sign_string, seconds)
+
 class MainTray(QtGui.QSystemTrayIcon):
     def __init__(self,logger,parent=None):
         self.logger = logger
@@ -40,10 +59,11 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         #Now set up the icon updating timer
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.setcuricon)
+        self.timer.timeout.connect(self.timeraction)
         self.timer.start(1000)
-    def setcuricon(self):
+    def timeraction(self):
         self.setIcon(self.curicon)
+        self.setToolTip("ConnectorDB last sync " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago.")
 
 
     def exitButtonPressed(self):
