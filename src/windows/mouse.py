@@ -37,7 +37,9 @@ class StreamGatherer():
             self.click_number.value = 0
 
     def run(self,cache):
-        cache.insert(self.streamname,self.clicks())
+        clk = self.clicks()
+        if clk > 0:
+            cache.insert(self.streamname,clk)
 
 
     #Gets the number of keypresses that are logged, and reset the counter
