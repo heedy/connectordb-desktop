@@ -67,7 +67,7 @@ class MainTray(QtGui.QSystemTrayIcon):
 
 
     def exitButtonPressed(self):
-        sys,exit(0)
+        sys.exit(0)
 
     def gathertoggled(self):
         if self.gatherAction.isChecked():

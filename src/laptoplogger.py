@@ -3,6 +3,7 @@ from connectordb.logger import Logger
 import platform
 import threading
 import logging
+import os
 from plugins import getplugins
 
 
@@ -19,7 +20,7 @@ class LaptopLogger():
             self.gatherers.append(p())
 
         #Open the cache file
-        self.cache = Logger("cache.db",on_create=self.create_callback)
+        self.cache = Logger(os.path.join(os.path.dirname(__file__),"cache.db"),on_create=self.create_callback)
 
         #Start running the logger if it is supposed to be running
         if self.cache.data["isrunning"]:

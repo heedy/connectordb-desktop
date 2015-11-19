@@ -1,5 +1,6 @@
 from PyQt4 import QtGui, QtCore, uic
 import os
+import sys
 
 import logging
 import platform
