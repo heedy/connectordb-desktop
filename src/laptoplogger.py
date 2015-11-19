@@ -20,7 +20,16 @@ class LaptopLogger():
             self.gatherers.append(p())
 
         #Open the cache file
-        self.cache = Logger(os.path.join(os.path.dirname(__file__),"cache.db"),on_create=self.create_callback)
+        filedir = os.path.dirname(__file__)
+        # If on windows we save it in the appdata folder
+        appdata = os.getenv("APPDATA")
+        if appdata!="":
+            filedir = os.path.join(appdata,"ConnectorDBLaptopLogger")
+            if not os.path.exists(filedir):
+                os.makedirs(filedir)
+        cachefile = os.path.join(filedir,"cache.db")
+        logging.info("Opening database " + cachefile)
+        self.cache = Logger(cachefile,on_create=self.create_callback)
 
         #Start running the logger if it is supposed to be running
         if self.cache.data["isrunning"]:
