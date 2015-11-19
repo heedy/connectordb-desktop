@@ -29,7 +29,7 @@ def getplugins(directory = os.path.dirname(__file__)):
     directory_all = os.path.join(directory,"all")
     # Make sure the directory exists
     if not os.path.isdir(directory):
-        raise Exception("Could not find plugin directory %s"%(directory,))
+        raise Exception("Could not find plugin directory %s"%(directory_all,))
 
     # Next load the OS-specific plugins
     my_os = platform.system()
