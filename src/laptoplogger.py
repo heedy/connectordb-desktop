@@ -40,7 +40,7 @@ class LaptopLogger():
 
         c.data = {
             "isrunning": False,    # Whether or not the logger is currently gathering data
-            "gathertime": 60.0,    # The logger gathers datapoints every this number of seconds
+            "gathertime": 4.0,    # The logger gathers datapoints every this number of seconds
         }
         c.syncperiod = 60*60    # Sync once an hour
 
@@ -49,7 +49,6 @@ class LaptopLogger():
             self.firstrun_callback(c)
 
     def gather(self):
-        logging.debug("Gathering data...")
         for g in self.gatherers:
             g.run(self.cache)
 

@@ -63,7 +63,7 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.timer.start(1000)
     def timeraction(self):
         self.setIcon(self.curicon)
-        self.setToolTip("ConnectorDB last sync " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago.")
+        self.setToolTip("ConnectorDB - synced " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago, "+str(len(self.logger.cache))+" in cache.")
 
 
     def exitButtonPressed(self):

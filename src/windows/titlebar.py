@@ -6,6 +6,9 @@ class StreamGatherer():
     streamschema = {"type": "string"}
 
     description = "Gathers the currently active window's titlebar text"
+    
+    def __init__(self):
+        self.prevtext = ""
 
     def start(self,cache):
         pass
@@ -13,7 +16,10 @@ class StreamGatherer():
         pass
 
     def run(self,cache):
-        cache.insert(self.streamname,self.windowtext())
+        wt = self.windowtext()
+        if wt != self.prevtext:
+            self.prevtext = wt
+            cache.insert(self.streamname,wt)
 
     #Gets the titlebar text of the currently active window
     def windowtext(self):
