@@ -12,16 +12,25 @@ By default, we try to have plugins be consistent across OS, but it is not a requ
 Our goal is to support at the very least:
 - number of keypresses - allows to measure how much you are typing
 	- [x] windows
-	- [ ] linux
+	- [x] linux
 	- [ ] osx
-- Active application - shows which program is currently being run
-	- [x] windows (done by gathering window titlebar text)
-	- [ ] linux
+- Number of mouse clicks - another measure of activity
+	- [x] windows
+	- [x] linux
 	- [ ] osx
-- cpu - gets the CPU utilization
-	- [ ] windows
-	- [ ] linux
+- Active application - titlebar text
+	- [x] windows
+	- [x] linux - current implementation is hacky and doesn't work great
 	- [ ] osx
+
+
+## Installing
+
+### Windows
+Use the release installer (go to releases tab in github).
+
+### Linux
+You need python-xlib, connectordb (pip install), and pyqt4.
 
 ## Plugins
 

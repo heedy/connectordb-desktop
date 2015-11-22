@@ -23,7 +23,7 @@ class LaptopLogger():
         filedir = os.path.dirname(__file__)
         # If on windows we save it in the appdata folder
         appdata = os.getenv("APPDATA")
-        if appdata!="":
+        if appdata!="" and appdata is not None:
             filedir = os.path.join(appdata,"ConnectorDBLaptopLogger")
             if not os.path.exists(filedir):
                 os.makedirs(filedir)
@@ -103,13 +103,15 @@ if __name__=="__main__":
     def apikey_callback(c):
         #Allow the user to choose a custom server
         s = raw_input("Server [DEFAULT: %s]:"%(CONNECTORDB_URL,))
+        print c.serverurl
         if s!="":
+            logging.info("Setting Server URL to "+ s)
             c.serverurl = s
 
-        u = raw_input("Username:")
+        u = raw_input("Username: ")
         p = getpass.getpass()
 
-        cdb = ConnectorDB(u,p,s)
+        cdb = ConnectorDB(u,p,c.serverurl)
 
         dev = cdb.user[platform.node()]
         if not dev.exists():

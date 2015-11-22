@@ -9,8 +9,7 @@ def log_key_count(val):
     hm = pyHook.HookManager()
     hm.KeyDown = OnKeyboardEvent
     hm.HookKeyboard()
-
-    pythoncom.PumpMessages()
+    hm.run()
 
 class StreamGatherer():
     streamname = "keypresses"

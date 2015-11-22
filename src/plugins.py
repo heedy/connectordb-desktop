@@ -19,7 +19,7 @@ def getpluginsfromdirectory(directory):
 
     # Now load ALL the plugins
     # Originally based on this: https://lextoumbourou.com/blog/posts/dynamically-loading-modules-and-classes-in-python/
-    pluginmodules = map(os.path.splitext,map(os.path.basename,glob.glob(fullpath + "/[a-zA-z]*.py")))
+    pluginmodules = map(os.path.splitext,map(os.path.basename,glob.glob(fullpath + "/[a-zA-Z]*.py")))
     for mod_name,ext in pluginmodules:
         logging.info("Loading: " + mod_name)
         loaded_mod = importlib.import_module(directory + "." + mod_name)

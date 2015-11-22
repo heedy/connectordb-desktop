@@ -8,10 +8,9 @@ def log_click_count(val):
         return True
 
     hm = pyHook.HookManager()
-    hm.SubscribeMouseAllButtonsDown(OnMouseEvent)
+    hm.MouseAllButtonsDown = OnMouseEvent
     hm.HookMouse()
-
-    pythoncom.PumpMessages()
+    hm.run()
 
 class StreamGatherer():
     streamname = "mouseclicks"
