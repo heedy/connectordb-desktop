@@ -49,7 +49,9 @@ class MainTray(QtGui.QSystemTrayIcon):
         for g in self.logger.gatherers:
             gAction = self.menu.addAction(g)
             gAction.setCheckable(True)
+            gAction.setToolTip(self.logger.gatherers[g].description)
             gAction.triggered.connect(lambda a=None,g=g,gA=gAction:self.togglegatherer(g,gA))
+            gAction.hovered.connect(lambda a=None,g=g,gA=gAction:self.togglegatherershover(g,gA))
             if g in self.logger.currentgatherers:
                 gAction.setChecked(True)
 
@@ -131,7 +133,8 @@ class MainTray(QtGui.QSystemTrayIcon):
         else:
             self.logger.removegatherer(name)
 
-
+    def togglegatherershover(self,name,action):
+        QtGui.QToolTip.showText(QtGui.QCursor.pos(),action.toolTip())
 
     def exitButtonPressed(self):
         sys.exit(0)
