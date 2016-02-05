@@ -29,6 +29,7 @@ def runapp():
     def loginCallback():
         tray.show()
         tray.start()
+        tray.startsync()
 
 
 

@@ -13,6 +13,7 @@ class LaptopLogger():
 
         self.syncer = None
         self.isrunning = False
+        self.issyncing = False
 
         #Get the data gatherers
         self.gatherers = []
@@ -27,20 +28,23 @@ class LaptopLogger():
             filedir = os.path.join(appdata,"ConnectorDBLaptopLogger")
             if not os.path.exists(filedir):
                 os.makedirs(filedir)
-        cachefile = os.path.join(filedir,"cache.db")
+        cachefile = os.path.join(filedir,"cacheDBG.db")
         logging.info("Opening database " + cachefile)
         self.cache = Logger(cachefile,on_create=self.create_callback)
 
         #Start running the logger if it is supposed to be running
         if self.cache.data["isrunning"]:
             self.start()
+        if self.cache.data["isbgsync"]:
+            self.startsync()
 
     def create_callback(self,c):
         logging.info("Creating new cache file...")
 
         c.data = {
-            "isrunning": False,    # Whether or not the logger is currently gathering data
-            "gathertime": 4.0,    # The logger gathers datapoints every this number of seconds
+            "isrunning": False,    # Whether or not the logger is currently gathering data. This NEEDS to be false - it is set to true later
+            "isbgsync": False,      # Whether or not the logger automatically syncs with ConnectorDB. Needs to be false - automatically set to True later
+            "gathertime": 4.0,     # The logger gathers datapoints every this number of seconds
         }
         c.syncperiod = 60*60    # Sync once an hour
 
@@ -56,6 +60,7 @@ class LaptopLogger():
         self.syncer.daemon = True
         self.syncer.start()
 
+    # Whether or not to run data gathering
     def start(self):
         if not self.isrunning:
             logging.info("Start acquisition")
@@ -72,12 +77,22 @@ class LaptopLogger():
             for g in self.gatherers:
                 g.start(self.cache)
 
-            self.gather()
-
-            self.cache.start()
             self.isrunning = True
 
-    def stop(self):
+            self.gather()
+
+    # Whether or not to run background syncer
+    def startsync(self):
+        if not self.issyncing:
+            logging.info("Start background sync")
+            d = self.cache.data
+            d["isbgsync"] = True
+            self.cache.data = d
+            self.cache.start()
+            self.issyncing = True
+
+
+    def stop(self,temporary=False):
         logging.info("Stop acquisition")
 
         if self.syncer is not None:
@@ -87,8 +102,19 @@ class LaptopLogger():
         for g in self.gatherers:
             g.stop()
 
-        self.cache.stop()
+        if not temporary:
+            d = self.cache.data
+            d["isrunning"] = False
+            self.cache.data = d
+
         self.isrunning = False
+
+    def stopsync(self):
+        self.cache.stop()
+        d = self.cache.data
+        d["isbgsync"] = False
+        self.cache.data = d
+        self.issyncing= False
 
 # This code here allows running the app without a GUI - it runs the logger directly
 # from the underlying data-gathering plugins.

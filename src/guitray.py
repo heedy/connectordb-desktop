@@ -35,8 +35,11 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.gathericon = QtGui.QIcon(os.path.join(mydir, 'resources/gatheringicon.png'))
         self.failicon = QtGui.QIcon(os.path.join(mydir,"resources/failicon.png"))
 
+        # This tells us whether to update the icon
+        self.previcon = None
+
         self.curicon = self.idleicon
-        if self.logger.cache.syncthread is not None:
+        if self.logger.isrunning:
             self.curicon = self.gathericon
         super(MainTray,self).__init__(self.curicon,parent)
 
@@ -44,26 +47,75 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         gatherAction = self.menu.addAction("Gather Data")
         gatherAction.setCheckable(True)
+        gatherAction.setToolTip("Whether or not laptoplogger should gather data")
         gatherAction.triggered.connect(self.gathertoggled)
-        if self.logger.cache.syncthread is not None:
+        if self.logger.isrunning:
             gatherAction.setChecked(True)
         self.gatherAction = gatherAction
 
-        syncAction = self.menu.addAction("Sync Now")
-        syncAction.triggered.connect(self.syncnow)
+        syncAction = self.menu.addAction("Auto Sync")
+        syncAction.setCheckable(True)
+        syncAction.setToolTip("Whether or not laptoplogger should automatically sync to server")
+        syncAction.triggered.connect(self.synctoggled)
+        if self.logger.issyncing:
+            syncAction.setChecked(True)
+        self.syncAction = syncAction
+
+        self.menu.addSeparator()
+
+        syncNowAction = self.menu.addAction("Sync Now")
+        syncNowAction.setToolTip("Sync with the ConnectorDB server right now.")
+        syncNowAction.triggered.connect(self.syncnow)
+
+        self.menu.addSeparator()
+
+        stop1h = self.menu.addAction("Stop for 1 hour")
+        stop1h.setToolTip("Stop gathering data for 1 hour")
+        stop1h.triggered.connect(self.stop1h)
+
+        stop15 = self.menu.addAction("Stop for 15 minutes")
+        stop15.setToolTip("Stop gathering data for 15 minutes")
+        stop15.triggered.connect(self.stop15)
+
+        self.menu.addSeparator()
 
         exitAction = self.menu.addAction("Exit")
         exitAction.triggered.connect(self.exitButtonPressed)
 
         self.setContextMenu(self.menu)
 
-        #Now set up the icon updating timer
+        # Number of seconds to wait before toggling gather
+        self.waitgather = 0
+
+        #Now set up the main timer (has to tick once a second, since it is used for multiple things)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timeraction)
         self.timer.start(1000)
     def timeraction(self):
-        self.setIcon(self.curicon)
-        self.setToolTip("ConnectorDB - synced " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago, "+str(len(self.logger.cache))+" in cache.")
+        if self.previcon != self.curicon:
+            self.setIcon(self.curicon)
+            self.previcon = self.curicon
+
+        tooltiptext = "ConnectorDB - "
+
+        if self.waitgather > 0:
+            self.waitgather -= 1
+            if self.waitgather == 0:
+                # Start gathering data
+                self.gatherAction.setChecked(True)
+                self.gathertoggled()
+            else:
+                tooltiptext += "Stopped for " + pretty_time_delta(self.waitgather) + ", "
+
+
+        if self.logger.cache.lastsynctime > 0.0:
+            tooltiptext += "synced " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago, "
+        tooltiptext += str(len(self.logger.cache))+" in cache."
+
+        self.setToolTip(tooltiptext)
+
+
+
 
 
     def exitButtonPressed(self):
@@ -71,14 +123,32 @@ class MainTray(QtGui.QSystemTrayIcon):
 
     def gathertoggled(self):
         if self.gatherAction.isChecked():
+            self.waitgather = 0
             self.start()
         else:
             self.stop()
+    def synctoggled(self):
+        if self.syncAction.isChecked():
+            self.startsync()
+        else:
+            self.stopsync()
 
     def syncnow(self):
         logging.info("started sync")
         thr = threading.Thread(target=self.logger.cache.sync)
         thr.start()
+
+    def stop15(self):
+        logging.info("Stop for 15 minutes")
+        self.gatherAction.setChecked(False)
+        self.waitgather = 15*60
+        self.gathertoggled()
+
+    def stop1h(self):
+        logging.info("Stop for 1 hour")
+        self.gatherAction.setChecked(False)
+        self.waitgather = 60*60
+        self.gathertoggled()
 
     def onsyncfail(self,c):
         # Set the icon to red
@@ -106,6 +176,15 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         if self.supportsMessages():
             self.showMessage("LaptopLogger","Started Gathering Data")
+    def startsync(self):
+        logging.info("Start sync")
+
+        # Start the actual logger
+        self.logger.startsync()
+
+        # set the check box correctly
+        self.syncAction.setChecked(True)
+
 
     def stop(self):
         logging.info("Stop logging")
@@ -116,6 +195,11 @@ class MainTray(QtGui.QSystemTrayIcon):
         # set the check box correctly
         self.gatherAction.setChecked(False)
 
-        self.logger.stop()
+        self.logger.stop(self.waitgather > 0)
         if self.supportsMessages():
             self.showMessage("LaptopLogger","Data gathering stopped")
+    def stopsync(self):
+        logging.info("Stop sync")
+        self.syncAction.setChecked(False)
+
+        self.logger.stopsync()

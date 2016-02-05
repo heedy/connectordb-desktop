@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>336</width>
-    <height>442</height>
+    <height>456</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,7 +31,7 @@
      <x>10</x>
      <y>280</y>
      <width>311</width>
-     <height>101</height>
+     <height>121</height>
     </rect>
    </property>
    <property name="title">
@@ -87,6 +87,19 @@
     </property>
     <property name="text">
      <string>mydevice</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="ispublic">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>90</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Make Device Public</string>
     </property>
    </widget>
   </widget>
@@ -163,7 +176,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>400</y>
+     <y>420</y>
      <width>75</width>
      <height>23</height>
     </rect>

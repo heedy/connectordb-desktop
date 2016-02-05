@@ -36,25 +36,30 @@ class LoginWindow(QtGui.QDialog):
 
     def login(self):
         # The login button was clicked
+        self.okbutton.setEnabled(False)
 
         # First we make sure that there is a username given
         usrname = str(self.username.text())
         if usrname == "":
             QtGui.QMessageBox.critical(self.sender(),"Blank Username","Please type in your ConnectorDB username!")
+            self.okbutton.setEnabled(True)
             return
         passwd = str(self.password.text())
         if passwd == "":
             QtGui.QMessageBox.critical(self.sender(),"Blank Password","Please type in your ConnectorDB user's password!")
+            self.okbutton.setEnabled(True)
             return
 
         device = str(self.device.text())
         if device == "":
             QtGui.QMessageBox.critical(self.sender(),"Blank Device","No name was given to your device!")
+            self.okbutton.setEnabled(True)
             return
 
         server = str(self.server.text())
         if not server.startswith("http://") and not server.startswith("https://"):
             QtGui.QMessageBox.critical(self.sender(),"Invalid Server","The given server name is not valid!")
+            self.okbutton.setEnabled(True)
             return
 
         self.okbutton.setEnabled(False)
@@ -63,13 +68,13 @@ class LoginWindow(QtGui.QDialog):
             cdb = connectordb.ConnectorDB(usrname.strip(),passwd,server)
             dev = cdb.user[device]
             if not dev.exists():
-                dev.create()
+                dev.create(self.ispublic.isChecked())
             self.logger.cache.apikey = dev.apikey
             self.logger.cache.serverurl = server
         except Exception as e:
             self.okbutton.setEnabled(True)
             QtGui.QMessageBox.critical(self.sender(),"Could not Log in!",str(e))
             return
-        self.okbutton.setEnabled(True)
         self.logincallback()
+        self.okbutton.setEnabled(True)
         self.hide()
