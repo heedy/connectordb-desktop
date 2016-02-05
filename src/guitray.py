@@ -45,6 +45,16 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         self.menu = QtGui.QMenu()
 
+        # Set up the list of gatherers
+        for g in self.logger.gatherers:
+            gAction = self.menu.addAction(g)
+            gAction.setCheckable(True)
+            gAction.triggered.connect(lambda a=None,g=g,gA=gAction:self.togglegatherer(g,gA))
+            if g in self.logger.currentgatherers:
+                gAction.setChecked(True)
+
+        self.menu.addSeparator()
+
         gatherAction = self.menu.addAction("Gather Data")
         gatherAction.setCheckable(True)
         gatherAction.setToolTip("Whether or not laptoplogger should gather data")
@@ -114,7 +124,12 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         self.setToolTip(tooltiptext)
 
-
+    # Enables or disables the gien gatherer
+    def togglegatherer(self,name,action):
+        if action.isChecked():
+            self.logger.addgatherer(name)
+        else:
+            self.logger.removegatherer(name)
 
 
 

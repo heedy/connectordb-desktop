@@ -15,22 +15,31 @@ class LaptopLogger():
         self.isrunning = False
         self.issyncing = False
 
-        #Get the data gatherers
-        self.gatherers = []
+        #Get the data gatherers. currentgatherers is the ones that are set to ON
+        # gatherers is ALL of them
+        self.currentgatherers = {}
+        self.gatherers = {}
         for p in getplugins():
-            self.gatherers.append(p())
+            g = p()
+            self.currentgatherers[g.streamname] = g
+            self.gatherers[g.streamname] = g
 
         #Open the cache file
         filedir = os.path.dirname(__file__)
         # If on windows we save it in the appdata folder
         appdata = os.getenv("APPDATA")
         if appdata!="" and appdata is not None:
-            filedir = os.path.join(appdata,"ConnectorDBLaptopLogger")
+            filedir = os.path.join(appdata,"ConnectorDB/laptoplogger")
             if not os.path.exists(filedir):
                 os.makedirs(filedir)
-        cachefile = os.path.join(filedir,"cacheDBG.db")
+        cachefile = os.path.join(filedir,"cache.db")
         logging.info("Opening database " + cachefile)
         self.cache = Logger(cachefile,on_create=self.create_callback)
+
+        # Disable the relevant gatherers
+        for g in self.cache.data["disabled_gatherers"]:
+            if g in self.currentgatherers:
+                del self.currentgatherers[g]
 
         #Start running the logger if it is supposed to be running
         if self.cache.data["isrunning"]:
@@ -45,6 +54,7 @@ class LaptopLogger():
             "isrunning": False,    # Whether or not the logger is currently gathering data. This NEEDS to be false - it is set to true later
             "isbgsync": False,      # Whether or not the logger automatically syncs with ConnectorDB. Needs to be false - automatically set to True later
             "gathertime": 4.0,     # The logger gathers datapoints every this number of seconds
+            "disabled_gatherers": [], # The names of disabled gatherers
         }
         c.syncperiod = 60*60    # Sync once an hour
 
@@ -52,9 +62,35 @@ class LaptopLogger():
         if self.firstrun_callback is not None:
             self.firstrun_callback(c)
 
+    def removegatherer(self,g):
+        logging.info("Removing gatherer " + g)
+        if g in self.currentgatherers:
+            del self.currentgatherers[g]
+            if self.isrunning:
+                self.gatherers[g].stop()
+        # Save the setting
+        d = self.cache.data
+        if not g in d["disabled_gatherers"]:
+            d["disabled_gatherers"].append(g)
+            self.cache.data = d
+
+    def addgatherer(self,g):
+        logging.info("Adding gatherer " + g)
+        if not g in self.currentgatherers:
+            if self.isrunning:
+                self.gatherers[g].start(self.cache)
+            self.currentgatherers[g] = self.gatherers[g]
+        # Save the setting
+        d = self.cache.data
+        if g in d["disabled_gatherers"]:
+            d["disabled_gatherers"].remove(g)
+            self.cache.data = d
+
+
+
     def gather(self):
-        for g in self.gatherers:
-            g.run(self.cache)
+        for g in self.currentgatherers:
+            self.currentgatherers[g].run(self.cache)
 
         self.syncer = threading.Timer(self.cache.data["gathertime"],self.gather)
         self.syncer.daemon = True
@@ -70,12 +106,12 @@ class LaptopLogger():
 
             #First, make sure all streams are ready to go in the cache
             for g in self.gatherers:
-                if not g.streamname in self.cache:
-                    logging.info("Adding {} stream ({})".format(g.streamname,g.streamschema))
-                    self.cache.addStream(g.streamname,g.streamschema)
+                if not g in self.cache:
+                    logging.info("Adding {} stream ({})".format(g,self.gatherers[g].streamschema))
+                    self.cache.addStream(g,self.gatherers[g].streamschema)
 
-            for g in self.gatherers:
-                g.start(self.cache)
+            for g in self.currentgatherers:
+                self.currentgatherers[g].start(self.cache)
 
             self.isrunning = True
 
@@ -99,8 +135,8 @@ class LaptopLogger():
             self.syncer.cancel()
             self.syncer = None
 
-        for g in self.gatherers:
-            g.stop()
+        for g in self.currentgatherers:
+            self.currentgatherers[g].stop()
 
         if not temporary:
             d = self.cache.data
