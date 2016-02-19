@@ -1,9 +1,9 @@
 The Laptop Logger
 ==================
 
-This is the ConnectorDB frontend for logging the things you do on your PC. The LaptopLogger includes a headless version for running on servers, and a cross-platform QT4 GUI for use on your primary machine.
+This is the [ConnectorDB](https://connectordb.github.io) frontend for logging the things you do on your PC. The LaptopLogger includes a headless version for running on servers, and a cross-platform QT4 GUI for use on your primary machine.
 
-The laptoplogger intentionally has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
+The laptoplogger has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
 
 ## Logging
 The built-in plugins log several things, but the logged quantities depend on the operating system.
@@ -30,7 +30,23 @@ Our goal is to support at the very least:
 Use the release installer (go to releases tab in github).
 
 ### Linux
-You need python-xlib, connectordb (pip install), and pyqt4.
+
+```bash
+sudo apt-get install python-xlib python-qt4 python-apsw python-pip
+sudo pip install connectordb
+
+git clone https://github.com/connectordb/connectordb-laptoplogger
+cd ./connectordb-laptoplogger/src
+python guilaptoplogger.py
+```
+
+It is up to you to set it up to run on login right now (we'll get to it).
+
+A .deb package for ubuntu is [in the pipeline](https://github.com/connectordb/connectordb-laptoplogger/issues/1)
+
+### Mac
+
+Mac version is not ready yet: [see what still needs to be done](https://github.com/connectordb/connectordb-laptoplogger/issues/2)
 
 ## Plugins
 
