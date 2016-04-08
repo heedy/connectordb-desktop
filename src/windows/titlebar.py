@@ -1,12 +1,19 @@
 # This script gathers the active titlebar text on "run"
 import win32gui
 
+# Workaround to get unicode working in both python 2 and 3
+try:
+    unicode = unicode
+except:
+    def unicode(txt,errors="lol"):
+        return txt
+
 class StreamGatherer():
     streamname = "activewindow"
     streamschema = {"type": "string"}
 
     description = "Gathers the currently active window's titlebar text"
-    
+
     def __init__(self):
         self.prevtext = ""
 

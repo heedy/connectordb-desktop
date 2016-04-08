@@ -1,23 +1,23 @@
 # This script gathers the active titlebar text on "run"
-import pyxhook as pyHook
-from multiprocessing import Process, Array, Lock
-import logging
+# https://stackoverflow.com/questions/23786289/how-to-correctly-detect-application-name-when-changing-focus-event-occurs-with
 
-MAX_STRING_SIZE = 500
-#This function is run in its own process to allow it to gather titlebar info
-def log_titlebar(val):
-    def OnEvent(event):
-        if len(event.WindowName) < MAX_STRING_SIZE:
-            val.value = event.WindowName
-        else:
-            logging.warning("Window name too long!")
+# Workaround to get unicode working in both python 2 and 3
+try:
+    unicode = unicode
+except:
+    def unicode(txt,errors="lol"):
+        return txt
 
-    hm = pyHook.HookManager()
-    hm.KeyUp = OnEvent
-    hm.MouseAllButtonsUp = OnEvent
-    hm.HookKeyboard()
-    hm.HookMouse()
-    hm.run()
+import Xlib
+import Xlib.display
+
+disp = Xlib.display.Display()
+root = disp.screen().root
+
+NET_WM_NAME = disp.intern_atom('_NET_WM_NAME')
+NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
+
+root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
 
 class StreamGatherer():
     streamname = "activewindow"
@@ -27,22 +27,11 @@ class StreamGatherer():
 
     def __init__(self):
         self.prevtext = ""
-        self.titlebar_process = None
-        self.current_text = Array('c',MAX_STRING_SIZE + 10)
 
-    def start(self,logger):
-        # Starts the background processes and stuff. The cache is passed, so that
-        # if the gatherer catches events, they can be logged as they come in
-        if self.titlebar_process is None:
-            self.titlebar_process = Process(target=log_titlebar,args=(self.current_text,))
-            self.titlebar_process.daemon = True
-            self.titlebar_process.start()
-
+    def start(self,cache):
+        pass
     def stop(self):
-        if self.titlebar_process is not None:
-            self.titlebar_process.terminate()
-            self.titlebar_process = None
-            self.click_number.value = 0
+        pass
 
     def run(self,cache):
         wt = self.windowtext()
@@ -52,4 +41,11 @@ class StreamGatherer():
 
     #Gets the titlebar text of the currently active window
     def windowtext(self):
-        return unicode(self.current_text.value,errors="ignore")
+        try:
+            window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
+            window = disp.create_resource_object('window', window_id)
+            window.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
+            window_name = window.get_full_property(NET_WM_NAME, 0).value
+        except Xlib.error.XError: #simplify dealing with BadWindow
+            window_name = ""
+        return unicode(window_name,errors="ignore")

@@ -24,6 +24,10 @@ Our goal is to support at the very least:
 	- [ ] osx
 
 
+## Issues
+- Login takes a long time (looks like it is frozen for several seconds when initially logging in)
+- In some cases, login window has misaligned fonts.
+
 ## Installing
 
 ### Windows
@@ -32,17 +36,17 @@ Use the release installer (go to releases tab in github).
 ### Linux
 
 ```bash
-sudo apt-get install python-xlib python-qt4 python-apsw python-pip
+sudo apt-get install python-xlib python-qt5 python-apsw python-pip
 sudo pip install connectordb
 
 git clone https://github.com/connectordb/connectordb-laptoplogger
 cd ./connectordb-laptoplogger/src
-python guilaptoplogger.py
+python guilaptoplogger.py #If running headless, use python laptoplogger.py
 ```
 
-It is up to you to set it up to run on login right now (we'll get to it).
+If you don't have PyQT5, it automatically falls back to using PyQT4.
 
-A .deb package for ubuntu is [in the pipeline](https://github.com/connectordb/connectordb-laptoplogger/issues/1)
+It is up to you to set it up to run on login right now - use your desktop environment's startup manager.
 
 ### Mac
 

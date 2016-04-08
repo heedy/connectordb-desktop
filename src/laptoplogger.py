@@ -25,13 +25,13 @@ class LaptopLogger():
             self.gatherers[g.streamname] = g
 
         #Open the cache file
-        filedir = os.path.dirname(__file__)
+        filedir = os.path.join(os.path.expanduser("~"),".local/share/connectordb/laptoplogger")
         # If on windows we save it in the appdata folder
         appdata = os.getenv("APPDATA")
         if appdata!="" and appdata is not None:
             filedir = os.path.join(appdata,"ConnectorDB/laptoplogger")
-            if not os.path.exists(filedir):
-                os.makedirs(filedir)
+        if not os.path.exists(filedir):
+            os.makedirs(filedir)
         cachefile = os.path.join(filedir,"cache.db")
         logging.info("Opening database " + cachefile)
         self.cache = Logger(cachefile,on_create=self.create_callback)
@@ -155,6 +155,10 @@ class LaptopLogger():
 # This code here allows running the app without a GUI - it runs the logger directly
 # from the underlying data-gathering plugins.
 if __name__=="__main__":
+    # https://stackoverflow.com/questions/954834/how-do-i-use-raw-input-in-python-3-1
+    try: input = raw_input
+    except NameError: pass
+    
     import time
     import getpass
     import platform
@@ -164,15 +168,15 @@ if __name__=="__main__":
 
     def apikey_callback(c):
         #Allow the user to choose a custom server
-        s = raw_input("Server [DEFAULT: %s]:"%(CONNECTORDB_URL,))
-        print c.serverurl
+        s = input("Server [DEFAULT: %s]:"%(CONNECTORDB_URL,))
+        print(c.serverurl)
         if s!="":
             logging.info("Setting Server URL to "+ s)
             c.serverurl = s
 
-        u = raw_input("Username: ")
+        u = input("Username: ")
         p = getpass.getpass()
-
+        
         cdb = ConnectorDB(u,p,c.serverurl)
 
         dev = cdb.user[platform.node()]

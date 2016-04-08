@@ -1,11 +1,6 @@
-Unless otherwise posted in the header files of the application's code, this software is dual-licensed under the MIT and GPLv3 licenses.
-Several submodules of the code are GPL licensed, and are clearly marked as such.
+The MIT License (MIT)
 
-All code and installation instructions for the software are available at http://github.com/connectordb/connectordb-laptoplogger
-
-For reference, The MIT License (MIT) is given below:
-
-Copyright (c) 2015 
+Copyright (c) 2016
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

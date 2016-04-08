@@ -1,5 +1,12 @@
 import sys
-from PyQt4 import QtGui
+
+QtGui = None
+try:
+    from PyQt5 import QtWidgets
+    QtGui = QtWidgets
+except:
+    print("Couldn't find QT5 - falling back to Qt4")
+    from PyQt4 import QtGui
 
 from connectordb import ConnectorDB
 

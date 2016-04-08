@@ -1,16 +1,45 @@
-import pyxhook as pyHook
+
 from multiprocessing import Process, Value
+
+from Xlib import X,display
+from Xlib.ext import record
+from Xlib.protocol import rq
+disp = display.Display()
+
+if not disp.has_extension("RECORD"):
+    raise Exception("RECORD extension not found")
 
 #This function is run in its own process to allow it to gather keypresses
 def log_click_count(val):
-    def OnMouseEvent(event):
-        val.value += 1
-        return True
+    # https://stackoverflow.com/questions/6609078/selective-record-using-python-xlib
+    def callback(reply):
+        if reply.category != record.FromServer or reply.client_swapped or not len(reply.data):
+            return
+        data = reply.data
+        while len(data):
+            event, data = rq.EventField(None).parse_binary_value(data, disp.display, None, None)
 
-    hm = pyHook.HookManager()
-    hm.MouseAllButtonsDown = OnMouseEvent
-    hm.HookMouse()
-    hm.run()
+            if event.type == X.ButtonPress:
+                if event.detail in [1,3]:
+                    val.value +=1
+
+    context = disp.record_create_context(
+                0,
+                [record.AllClients],
+                [{
+                        'core_requests': (0, 0),
+                        'core_replies': (0, 0),
+                        'ext_requests': (0, 0, 0, 0),
+                        'ext_replies': (0, 0, 0, 0),
+                        'delivered_events': (0, 0),
+                        'device_events': (X.KeyPress,X.ButtonPress), #TODO: Why does this not allow only keypress/button?
+                        'errors': (0, 0),
+                        'client_started': False,
+                        'client_died': False,
+                }])
+    disp.record_enable_context(context,callback)
+    disp.record_free_context(context)
+
 
 class StreamGatherer():
     streamname = "mouseclicks"

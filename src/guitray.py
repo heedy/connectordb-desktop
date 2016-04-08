@@ -1,4 +1,13 @@
-from PyQt4 import QtGui,QtCore
+
+try:
+    from PyQt5 import QtCore, QtWidgets
+    from PyQt5.QtGui import QIcon
+    QtGui = QtWidgets
+except:
+    print("Couldn't find QT5 - falling back to Qt4")
+    from PyQt4 import QtGui,QtCore
+    QIcon = QtGui.QIcon
+
 import sys
 import os
 import logging
@@ -31,9 +40,9 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         #Load the icons
         mydir = os.path.dirname(__file__)
-        self.idleicon = QtGui.QIcon(os.path.join(mydir, 'resources/logo.png'))
-        self.gathericon = QtGui.QIcon(os.path.join(mydir, 'resources/gatheringicon.png'))
-        self.failicon = QtGui.QIcon(os.path.join(mydir,"resources/failicon.png"))
+        self.idleicon = QIcon(os.path.join(mydir, 'resources/logo.png'))
+        self.gathericon = QIcon(os.path.join(mydir, 'resources/gatheringicon.png'))
+        self.failicon = QIcon(os.path.join(mydir,"resources/failicon.png"))
 
         # This tells us whether to update the icon
         self.previcon = None

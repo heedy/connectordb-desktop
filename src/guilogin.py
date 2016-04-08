@@ -1,4 +1,14 @@
-from PyQt4 import QtGui, QtCore, uic
+
+try:
+    from PyQt5 import QtWidgets, QtCore, uic
+    from PyQt5.QtGui import QPixmap, QIcon
+    QtGui = QtWidgets
+except:
+    print("Couldn't find QT5 - falling back to Qt4")
+    from PyQt4 import QtGui, QtCore, uic
+    QPixmap = QtGui.QPixmap
+    QIcon = QtGui.QIcon
+
 import os
 import sys
 
@@ -19,8 +29,8 @@ class LoginWindow(QtGui.QDialog):
 
 
         logofile = os.path.join(mydir,"resources/logo.png")
-        self.logopicture.setPixmap(QtGui.QPixmap(logofile))
-        self.setWindowIcon(QtGui.QIcon(logofile))
+        self.logopicture.setPixmap(QPixmap(logofile))
+        self.setWindowIcon(QIcon(logofile))
 
         #The default device text
         self.device.setText(platform.node())
