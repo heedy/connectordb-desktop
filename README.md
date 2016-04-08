@@ -20,7 +20,7 @@ Our goal is to support at the very least:
 	- [ ] osx
 - Active application - titlebar text
 	- [x] windows
-	- [x] linux - current implementation is hacky and doesn't work great
+	- [x] linux
 	- [ ] osx
 
 
