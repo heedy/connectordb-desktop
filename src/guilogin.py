@@ -33,7 +33,7 @@ class LoginWindow(QtGui.QDialog):
         self.setWindowIcon(QIcon(logofile))
 
         #The default device text
-        self.device.setText(platform.node())
+        self.device.setText("laptop")
 
         #The ConnectorDB database url
         self.server.setText(connectordb.CONNECTORDB_URL)
@@ -79,7 +79,14 @@ class LoginWindow(QtGui.QDialog):
             cdb = connectordb.ConnectorDB(usrname.strip(),passwd,server)
             dev = cdb.user[device]
             if not dev.exists():
-                dev.create(self.ispublic.isChecked())
+                dev.create(self.ispublic.isChecked(),description="LaptopLogger")
+            else:
+                self.show()
+                reply = QtGui.QMessageBox.question(self.sender(),"Device Exists","This device already exists. Continue?", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+                if reply == QtGui.QMessageBox.No:
+                    raise Exception("Device Exists")
+                self.hide()
+                
             self.logger.cache.apikey = dev.apikey
             self.logger.cache.serverurl = server
         except Exception as e:
