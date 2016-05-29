@@ -72,7 +72,8 @@ class LoginWindow(QtGui.QDialog):
             self.okbutton.setEnabled(True)
             return
 
-        self.okbutton.setEnabled(False)
+        self.okbutton.setEnabled(True)
+        self.hide()
 
         try:
             cdb = connectordb.ConnectorDB(usrname.strip(),passwd,server)
@@ -82,9 +83,8 @@ class LoginWindow(QtGui.QDialog):
             self.logger.cache.apikey = dev.apikey
             self.logger.cache.serverurl = server
         except Exception as e:
-            self.okbutton.setEnabled(True)
+            self.show()
             QtGui.QMessageBox.critical(self.sender(),"Could not Log in!",str(e))
             return
+        # Run the callback that initializes the streams
         self.logincallback()
-        self.okbutton.setEnabled(True)
-        self.hide()

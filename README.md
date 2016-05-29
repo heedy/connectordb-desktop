@@ -1,7 +1,7 @@
 The Laptop Logger
 ==================
 
-This is the [ConnectorDB](https://connectordb.github.io) frontend for logging the things you do on your PC. The LaptopLogger includes a headless version for running on servers, and a cross-platform QT4 GUI for use on your primary machine.
+This is the [ConnectorDB](https://connectordb.github.io) frontend for logging the things you do on your PC. The LaptopLogger includes a headless version for running on servers, and a cross-platform QT GUI for use on your primary machine.
 
 The laptoplogger has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
 
@@ -25,7 +25,6 @@ Our goal is to support at the very least:
 
 
 ## Issues
-- Login takes a long time (looks like it is frozen for several seconds when initially logging in)
 - In some cases, login window has misaligned fonts.
 
 ## Installing
@@ -72,6 +71,7 @@ class StreamGatherer():
 
 	# A description to use when showing this gatherer's info in options
 	description = "Gathers the currently active window's titlebar text"
+	nickname = "Active Window"
 
 	def start(self,logger):
 		# start is called when the logger has begun acquisition of data.

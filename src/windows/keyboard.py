@@ -16,6 +16,7 @@ class StreamGatherer():
     streamname = "keypresses"
     streamschema = {"type": "integer"}
     description = "Gathers the number of keystrokes made on the keyboard"
+    datatype = "action.count"
 
     def __init__(self):
         self.keypress_number = Value('i',0)

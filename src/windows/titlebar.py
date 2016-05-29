@@ -11,7 +11,8 @@ except:
 class StreamGatherer():
     streamname = "activewindow"
     streamschema = {"type": "string"}
-
+    nickname = "Active Window"
+    datatype = "window.titlebar"
     description = "Gathers the currently active window's titlebar text"
 
     def __init__(self):

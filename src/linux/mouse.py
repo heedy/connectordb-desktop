@@ -45,6 +45,7 @@ class StreamGatherer():
     streamname = "mouseclicks"
     streamschema = {"type": "integer"}
     description = "Gathers the number of clicks made with the mouse"
+    datatype = "action.count"
 
     def __init__(self):
         self.click_number = Value('i',0)

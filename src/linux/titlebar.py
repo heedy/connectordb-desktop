@@ -22,7 +22,8 @@ root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
 class StreamGatherer():
     streamname = "activewindow"
     streamschema = {"type": "string"}
-
+    nickname = "Active Window"
+    datatype = "window.titlebar"
     description = "Gathers the currently active window's titlebar text"
 
     def __init__(self):

@@ -107,8 +107,15 @@ class LaptopLogger():
             #First, make sure all streams are ready to go in the cache
             for g in self.gatherers:
                 if not g in self.cache:
+                    gatherer = self.gatherers[g]
                     logging.info("Adding {} stream ({})".format(g,self.gatherers[g].streamschema))
-                    self.cache.addStream(g,self.gatherers[g].streamschema)
+                    nickname = ""
+                    if hasattr(gatherer,"nickname"):
+                        nickname = gatherer.nickname
+                    datatype = ""
+                    if hasattr(gatherer,"datatype"):
+                        datatype = gatherer.datatype
+                    self.cache.addStream(g,gatherer.streamschema,description=gatherer.description,nickname=nickname,datatype=datatype)
 
             for g in self.currentgatherers:
                 self.currentgatherers[g].start(self.cache)
@@ -158,7 +165,7 @@ if __name__=="__main__":
     # https://stackoverflow.com/questions/954834/how-do-i-use-raw-input-in-python-3-1
     try: input = raw_input
     except NameError: pass
-    
+
     import time
     import getpass
     import platform
@@ -176,7 +183,7 @@ if __name__=="__main__":
 
         u = input("Username: ")
         p = getpass.getpass()
-        
+
         cdb = ConnectorDB(u,p,c.serverurl)
 
         dev = cdb.user[platform.node()]
@@ -188,6 +195,10 @@ if __name__=="__main__":
 
     c = LaptopLogger(apikey_callback)
     c.start()
+
+    # background sync is not enabled by default, since the gui has issues.
+    # enable it right now in headless mode, since headless does not have a sync option
+    c.startsync()
 
     while True:
         time.sleep(1)

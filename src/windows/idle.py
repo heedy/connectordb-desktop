@@ -21,10 +21,10 @@ def get_idle_duration():
     return millis / 1000.0
 
 class StreamGatherer():
-    streamname = "idle"
+    streamname = "active"
     streamschema = {"type": "boolean"}
-
-    description = "Checks if the computer is idle (no user input)"
+    datatype = "toggle.active"
+    description = "False if the computer is idle (no user input)"
 
     def __init__(self):
         self.prevcheck = time.time()
@@ -36,7 +36,7 @@ class StreamGatherer():
         pass
 
     def run(self,cache):
-        newvalue =  time.time() - self.prevcheck < get_idle_duration()
+        newvalue =  time.time() - self.prevcheck > get_idle_duration()
         self.prevcheck = time.time()
         if newvalue != self.prevvalue:
             cache.insert(self.streamname,newvalue)
