@@ -30,7 +30,23 @@ Our goal is to support at the very least:
 ## Installing
 
 ### Windows
-Use the release installer (go to releases tab in github).
+Use the release installer (go to releases tab in github). If the installer fails, you can get it running
+by installing Python on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
+```
+apsw
+pyqt4
+pywin32
+pyhook
+```
+
+running this in CMD:
+```
+pip install connectordb
+```
+
+...and double clicking on `guilaptoplogger.py`.
+
+With a manual install, you will have to figure out how to auto-run on start.
 
 ### Linux
 
