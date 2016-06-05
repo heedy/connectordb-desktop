@@ -6,6 +6,10 @@ try:
     unicode = unicode
 except:
     def unicode(txt,errors="lol"):
+        # This is needed, because binary strings fail checks
+        # of string schema
+        if hasattr(txt,"decode"):
+            txt = txt.decode()
         return txt
 
 class StreamGatherer():
