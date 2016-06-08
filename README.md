@@ -24,6 +24,9 @@ Our goal is to support at the very least:
 	- [ ] osx
 
 
+<img src="https://raw.githubusercontent.com/connectordb/connectordb-laptoplogger/master/laptoplogger.png" width="300"/>
+
+
 ## Issues
 - In some cases, login window has misaligned fonts.
 
