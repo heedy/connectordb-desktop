@@ -53,9 +53,13 @@ class LaptopLogger():
             logging.info("Starting ConnectorDB server")
             try:
                 self.localrunning = True
-                return cdbmanager.Manager(self.localdir).start()==0
-            except:
-                pass
+                retcode = cdbmanager.Manager(self.localdir).start()
+                # The method needed to start on windows doesn't return error codes.
+                if (platform.system()=="Windows"):
+                    return True
+                return retcode==0
+            except Exception as e:
+                logging.error(str(e))
             self.localrunning = False
             return False
         return False

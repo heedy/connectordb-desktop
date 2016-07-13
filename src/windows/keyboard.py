@@ -5,6 +5,7 @@ from multiprocessing import Process, Value
 def log_key_count(val):
     def OnKeyboardEvent(event):
         val.value += 1
+        return True
 
     hm = pyHook.HookManager()
     hm.KeyDown = OnKeyboardEvent

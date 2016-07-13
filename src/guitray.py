@@ -7,7 +7,7 @@ except:
     print("Couldn't find QT5 - falling back to Qt4")
     from PyQt4 import QtGui,QtCore
     QIcon = QtGui.QIcon
-    QCursor = QrGui.QCursor
+    QCursor = QtGui.QCursor
 
 import sys
 import os

@@ -129,15 +129,19 @@ class LoginWindow(QtGui.QDialog):
             self.show()
             QtGui.QMessageBox.critical(self,"Create Failed","Failed to create ConnectorDB database. Try running the laptoplogger in command line to see log messages.")
         else:
+            # runlocal must be true for the database to start
             d = self.logger.cache.data
             d["runlocal"] = True
             self.logger.cache.data = d
             # Since we manage the database, notify the logger to start ConnectorDB
             if not self.logger.runLocal():
                 QtGui.QMessageBox.critical(self,"Could not start ConnectorDB","Failed to start ConnectorDB database after creating. Try running in terminal to see log messages")
+                d = self.logger.cache.data
+                d["runlocal"] = False
+                self.logger.cache.data = d
             else:
                 self.runsetup(self.usrname,self.passwd,self.device,"http://localhost:8000",self.create_deviceprivate.isChecked())
-
+                
 
     def runsetup(self,usrname,passwd,device,server,isprivate):
         try:

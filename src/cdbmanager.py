@@ -7,7 +7,8 @@ import subprocess
 import logging
 import files
 import shutil
-print("MANAGER")
+import platform
+
 class Manager(object):
     def __init__(self,location,cdb_executable=None):
         self.cdb_executable = cdb_executable
@@ -18,7 +19,14 @@ class Manager(object):
         self.location = os.path.abspath(location)
     def create(self,username,password,out=sys.stdout):
         logging.info("Creating new ConnectorDB database at "+self.location)
-        retcode = subprocess.call([self.cdb_executable,"create",self.location,"--user="+username+":"+password],stdout=out,stderr=out)
+        cmd = [self.cdb_executable,"create",self.location,"--user="+username+":"+password]
+        retcode = None
+        # There are issues in Windows with pyinstaller that make console windows pop up. We allow this console window
+        # but don't redirect output
+        if platform.system()=="Windows":
+            retcode = subprocess.call(cmd)
+        else:
+            retcode = subprocess.call(cmd,stdout=out,stderr=out)
         # If failed, remove the directory
         if retcode != 0:
             shutil.rmtree(self.location)
@@ -27,11 +35,23 @@ class Manager(object):
         logging.info("Starting database at "+self.location)
         # Unfortunately, we need to use --force, since oftentimes the database is not shut down correctly
         # on OS exit
-        return subprocess.call([self.cdb_executable,"start",self.location,"--force"],stdout=out,stderr=out)
+        return self.runproc([self.cdb_executable,"start",self.location,"--force"],out)
     def stop(self,out=sys.stdout):
-        logging.info("Stopping database at "+self.location)
-        return subprocess.call([self.cdb_executable,"stop",self.location],stdout=out,stderr=out)
-
+        logging.info("Stopping database at "+self.location) 
+        return self.runproc([self.cdb_executable,"stop",self.location],out)
+    def runproc(self,cmd,out):
+        retcode = None
+        # There are issues in Windows with pyinstaller that make console windows pop up. We disallow the console
+        # window here
+        if platform.system()=="Windows":
+            # https://code.activestate.com/recipes/578300-python-subprocess-hide-console-on-windows/
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags = subprocess.CREATE_NEW_CONSOLE | subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            retcode = subprocess.call(cmd,startupinfo=startupinfo)
+        else:
+            retcode = subprocess.call(cmd,stdout=out,stderr=out)
+    
 if (__name__=="__main__"):
     import webbrowser
     logging.basicConfig(level=logging.DEBUG)
