@@ -8,6 +8,7 @@ except:
     print("Couldn't find QT5 - falling back to Qt4")
     from PyQt4 import QtGui
 
+import webbrowser
 from connectordb import ConnectorDB
 
 #Import the necessary GUI elements
@@ -37,6 +38,9 @@ def runapp():
         tray.show()
         tray.start()
         tray.startsync()
+
+        #Open the browser to start off.
+        webbrowser.open(l.cache.serverurl)
 
 
 
