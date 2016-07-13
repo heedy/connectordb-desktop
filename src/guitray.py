@@ -15,6 +15,7 @@ import logging
 import threading
 import time
 import datetime
+import webbrowser
 
 # https://gist.github.com/thatalextaylor/7408395
 def pretty_time_delta(seconds):
@@ -52,6 +53,9 @@ class MainTray(QtGui.QSystemTrayIcon):
         if self.logger.isrunning:
             self.curicon = self.gathericon
         super(MainTray,self).__init__(self.curicon,parent)
+
+        # Click on the icon opens the browser
+        self.activated.connect(self.onclick)
 
         self.menu = QtGui.QMenu()
 
@@ -113,6 +117,11 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timeraction)
         self.timer.start(1000)
+
+    def onclick(self,reason):
+        if (reason == self.Trigger):
+            webbrowser.open(self.logger.cache.serverurl)
+
     def timeraction(self):
         if self.previcon != self.curicon:
             self.setIcon(self.curicon)
