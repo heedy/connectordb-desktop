@@ -5,6 +5,8 @@ import threading
 import logging
 import os
 from plugins import getplugins
+import files
+import cdbmanager
 
 
 class LaptopLogger():
@@ -24,14 +26,7 @@ class LaptopLogger():
             self.currentgatherers[g.streamname] = g
             self.gatherers[g.streamname] = g
 
-        #Open the cache file
-        filedir = os.path.join(os.path.expanduser("~"),".local/share/connectordb/laptoplogger")
-        # If on windows we save it in the appdata folder
-        appdata = os.getenv("APPDATA")
-        if appdata!="" and appdata is not None:
-            filedir = os.path.join(appdata,"ConnectorDB/laptoplogger")
-        if not os.path.exists(filedir):
-            os.makedirs(filedir)
+        filedir = files.getFileFolder()
         cachefile = os.path.join(filedir,"cache.db")
         logging.info("Opening database " + cachefile)
         self.cache = Logger(cachefile,on_create=self.create_callback)
@@ -41,16 +36,35 @@ class LaptopLogger():
             if g in self.currentgatherers:
                 del self.currentgatherers[g]
 
+        # If ConnectorDB is managed, start the executable
+        self.localdir = os.path.join(filedir,"db")
+        self.localrunning = False
+        self.runLocal()
+
         #Start running the logger if it is supposed to be running
         if self.cache.data["isrunning"]:
             self.start()
         if self.cache.data["isbgsync"]:
             self.startsync()
 
+    # This can be used to start a local version of ConnectorDB
+    def runLocal(self):
+        if self.cache.data["runlocal"] and not self.localrunning:
+            logging.info("Starting ConnectorDB server")
+            try:
+                self.localrunning = True
+                return cdbmanager.Manager(self.localdir).start()==0
+            except:
+                pass
+            self.localrunning = False
+            return False
+        return False
+
     def create_callback(self,c):
         logging.info("Creating new cache file...")
 
         c.data = {
+            "runlocal": False,      # Whether or not to run a local ConnectorDB instance (the ConnectorDB server)
             "isrunning": False,    # Whether or not the logger is currently gathering data. This NEEDS to be false - it is set to true later
             "isbgsync": False,      # Whether or not the logger automatically syncs with ConnectorDB. Needs to be false - automatically set to True later
             "gathertime": 4.0,     # The logger gathers datapoints every this number of seconds
@@ -159,6 +173,16 @@ class LaptopLogger():
         self.cache.data = d
         self.issyncing= False
 
+    def exit(self):
+        # exit performs cleanup - in this case, shutting down the ConnectorDB database on exit
+        if self.cache.data["runlocal"] and self.localrunning:
+            logging.info("Shutting down ConnectorDB server")
+            try:
+                cdbmanager.Manager(self.localdir).stop()
+                self.localrunning = False
+            except:
+                pass
+
 # This code here allows running the app without a GUI - it runs the logger directly
 # from the underlying data-gathering plugins.
 if __name__=="__main__":
@@ -197,7 +221,7 @@ if __name__=="__main__":
     c.start()
 
     # background sync is not enabled by default, since the gui has issues.
-    # enable it right now in headless mode, since headless does not have a sync option
+    # enable it right now in headless mode
     c.startsync()
 
     while True:

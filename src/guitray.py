@@ -156,6 +156,9 @@ class MainTray(QtGui.QSystemTrayIcon):
         QtGui.QToolTip.showText(QCursor.pos(),action.toolTip())
 
     def exitButtonPressed(self):
+        logging.info("Exiting...")
+        self.hide()
+        self.logger.exit()
         sys.exit(0)
 
     def gathertoggled(self):
