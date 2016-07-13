@@ -1,12 +1,13 @@
 
 try:
     from PyQt5 import QtCore, QtWidgets
-    from PyQt5.QtGui import QIcon
+    from PyQt5.QtGui import QIcon, QCursor
     QtGui = QtWidgets
 except:
     print("Couldn't find QT5 - falling back to Qt4")
     from PyQt4 import QtGui,QtCore
     QIcon = QtGui.QIcon
+    QCursor = QrGui.QCursor
 
 import sys
 import os
@@ -143,7 +144,7 @@ class MainTray(QtGui.QSystemTrayIcon):
             self.logger.removegatherer(name)
 
     def togglegatherershover(self,name,action):
-        QtGui.QToolTip.showText(QtGui.QCursor.pos(),action.toolTip())
+        QtGui.QToolTip.showText(QCursor.pos(),action.toolTip())
 
     def exitButtonPressed(self):
         sys.exit(0)
