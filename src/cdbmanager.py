@@ -19,7 +19,7 @@ class Manager(object):
         self.location = os.path.abspath(location)
     def create(self,username,password,out=sys.stdout):
         logging.info("Creating new ConnectorDB database at "+self.location)
-        cmd = [self.cdb_executable,"create",self.location,"--user="+username+":"+password]
+        cmd = [self.cdb_executable,"create",self.location,"--user="+username+":"+password,"--sqlbackend=sqlite3"]
         retcode = None
         # There are issues in Windows with pyinstaller that make console windows pop up. We allow this console window
         # but don't redirect output
