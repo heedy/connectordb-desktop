@@ -37,7 +37,7 @@ class Manager(object):
         # on OS exit
         return self.runproc([self.cdb_executable,"start",self.location,"--force"],out)
     def stop(self,out=sys.stdout):
-        logging.info("Stopping database at "+self.location) 
+        logging.info("Stopping database at "+self.location)
         return self.runproc([self.cdb_executable,"stop",self.location],out)
     def runproc(self,cmd,out):
         retcode = None
@@ -51,7 +51,8 @@ class Manager(object):
             retcode = subprocess.call(cmd,startupinfo=startupinfo)
         else:
             retcode = subprocess.call(cmd,stdout=out,stderr=out)
-    
+        return retcode
+
 if (__name__=="__main__"):
     import webbrowser
     logging.basicConfig(level=logging.DEBUG)

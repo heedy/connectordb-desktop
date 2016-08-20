@@ -57,6 +57,7 @@ class LaptopLogger():
                 # The method needed to start on windows doesn't return error codes.
                 if (platform.system()=="Windows"):
                     return True
+                logging.debug("Start return code: " +str(retcode))
                 return retcode==0
             except Exception as e:
                 logging.error(str(e))
