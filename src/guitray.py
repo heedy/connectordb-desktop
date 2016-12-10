@@ -5,7 +5,7 @@ try:
     QtGui = QtWidgets
 except:
     print("Couldn't find QT5 - falling back to Qt4")
-    from PyQt4 import QtGui,QtCore
+    from PyQt4 import QtGui, QtCore
     QIcon = QtGui.QIcon
     QCursor = QtGui.QCursor
 
@@ -17,8 +17,9 @@ import time
 import datetime
 import webbrowser
 
-# https://gist.github.com/thatalextaylor/7408395
+
 def pretty_time_delta(seconds):
+    # https://gist.github.com/thatalextaylor/7408395
     sign_string = '-' if seconds < 0 else ''
     seconds = abs(int(seconds))
     days, seconds = divmod(seconds, 86400)
@@ -33,18 +34,21 @@ def pretty_time_delta(seconds):
     else:
         return '%s%ds' % (sign_string, seconds)
 
+
 class MainTray(QtGui.QSystemTrayIcon):
-    def __init__(self,logger,parent=None):
+
+    def __init__(self, logger, parent=None):
         self.logger = logger
 
         self.logger.cache.onsyncfail = self.onsyncfail
         self.logger.cache.onsync = self.onsyncsuccess
 
-        #Load the icons
+        # Load the icons
         mydir = os.path.dirname(__file__)
         self.idleicon = QIcon(os.path.join(mydir, 'resources/logo.png'))
-        self.gathericon = QIcon(os.path.join(mydir, 'resources/gatheringicon.png'))
-        self.failicon = QIcon(os.path.join(mydir,"resources/failicon.png"))
+        self.gathericon = QIcon(os.path.join(
+            mydir, 'resources/gatheringicon.png'))
+        self.failicon = QIcon(os.path.join(mydir, "resources/failicon.png"))
 
         # This tells us whether to update the icon
         self.previcon = None
@@ -52,7 +56,7 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.curicon = self.idleicon
         if self.logger.isrunning:
             self.curicon = self.gathericon
-        super(MainTray,self).__init__(self.curicon,parent)
+        super(MainTray, self).__init__(self.curicon, parent)
 
         # Click on the icon opens the browser
         self.activated.connect(self.onclick)
@@ -64,8 +68,10 @@ class MainTray(QtGui.QSystemTrayIcon):
             gAction = self.menu.addAction(g)
             gAction.setCheckable(True)
             gAction.setToolTip(self.logger.gatherers[g].description)
-            gAction.triggered.connect(lambda a=None,g=g,gA=gAction:self.togglegatherer(g,gA))
-            gAction.hovered.connect(lambda a=None,g=g,gA=gAction:self.togglegatherershover(g,gA))
+            gAction.triggered.connect(
+                lambda a=None, g=g, gA=gAction: self.togglegatherer(g, gA))
+            gAction.hovered.connect(
+                lambda a=None, g=g, gA=gAction: self.togglegatherershover(g, gA))
             if g in self.logger.currentgatherers:
                 gAction.setChecked(True)
 
@@ -73,7 +79,8 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         gatherAction = self.menu.addAction("Gather Data")
         gatherAction.setCheckable(True)
-        gatherAction.setToolTip("Whether or not laptoplogger should gather data")
+        gatherAction.setToolTip(
+            "Whether or not laptoplogger should gather data")
         gatherAction.triggered.connect(self.gathertoggled)
         if self.logger.isrunning:
             gatherAction.setChecked(True)
@@ -81,7 +88,8 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         syncAction = self.menu.addAction("Auto Sync")
         syncAction.setCheckable(True)
-        syncAction.setToolTip("Whether or not laptoplogger should automatically sync to server")
+        syncAction.setToolTip(
+            "Whether or not laptoplogger should automatically sync to server")
         syncAction.triggered.connect(self.synctoggled)
         if self.logger.issyncing:
             syncAction.setChecked(True)
@@ -113,16 +121,21 @@ class MainTray(QtGui.QSystemTrayIcon):
         # Number of seconds to wait before toggling gather
         self.waitgather = 0
 
-        #Now set up the main timer (has to tick once a second, since it is used for multiple things)
+        # Now set up the main timer (has to tick once a second, since it is
+        # used for multiple things)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timeraction)
         self.timer.start(1000)
 
-    def onclick(self,reason):
-        if (reason == self.Trigger):
+    def onclick(self, reason):
+        """Called when the user clicks on the tray icon"""
+        if reason == self.Trigger:
             webbrowser.open(self.logger.cache.serverurl)
+            # Sync too, so user has most recent data
+            self.logger.cache.sync()
 
     def timeraction(self):
+        """Called periodically to update the tooltip"""
         if self.previcon != self.curicon:
             self.setIcon(self.curicon)
             self.previcon = self.curicon
@@ -136,24 +149,26 @@ class MainTray(QtGui.QSystemTrayIcon):
                 self.gatherAction.setChecked(True)
                 self.gathertoggled()
             else:
-                tooltiptext += "Stopped for " + pretty_time_delta(self.waitgather) + ", "
-
+                tooltiptext += "Stopped for " + \
+                    pretty_time_delta(self.waitgather) + ", "
 
         if self.logger.cache.lastsynctime > 0.0:
-            tooltiptext += "synced " + pretty_time_delta(time.time()-self.logger.cache.lastsynctime)+" ago, "
-        tooltiptext += str(len(self.logger.cache))+" in cache."
+            tooltiptext += "synced " + \
+                pretty_time_delta(
+                    time.time() - self.logger.cache.lastsynctime) + " ago, "
+        tooltiptext += str(len(self.logger.cache)) + " in cache."
 
         self.setToolTip(tooltiptext)
 
-    # Enables or disables the gien gatherer
-    def togglegatherer(self,name,action):
+    def togglegatherer(self, name, action):
+        """ Enables or disables the given gatherer """
         if action.isChecked():
             self.logger.addgatherer(name)
         else:
             self.logger.removegatherer(name)
 
-    def togglegatherershover(self,name,action):
-        QtGui.QToolTip.showText(QCursor.pos(),action.toolTip())
+    def togglegatherershover(self, name, action):
+        QtGui.QToolTip.showText(QCursor.pos(), action.toolTip())
 
     def exitButtonPressed(self):
         logging.info("Exiting...")
@@ -167,6 +182,7 @@ class MainTray(QtGui.QSystemTrayIcon):
             self.start()
         else:
             self.stop()
+
     def synctoggled(self):
         if self.syncAction.isChecked():
             self.startsync()
@@ -181,19 +197,20 @@ class MainTray(QtGui.QSystemTrayIcon):
     def stop15(self):
         logging.info("Stop for 15 minutes")
         self.gatherAction.setChecked(False)
-        self.waitgather = 15*60
+        self.waitgather = 15 * 60
         self.gathertoggled()
 
     def stop1h(self):
         logging.info("Stop for 1 hour")
         self.gatherAction.setChecked(False)
-        self.waitgather = 60*60
+        self.waitgather = 60 * 60
         self.gathertoggled()
 
-    def onsyncfail(self,c):
+    def onsyncfail(self, c):
         # Set the icon to red
         self.curicon = self.failicon
-        logging.info("SYNC FAIL: "+str(c))
+        logging.info("SYNC FAIL: " + str(c))
+
     def onsyncsuccess(self):
         logging.info("SYNC SUCCESS")
         # Set the icon to the correct value upon synchronization
@@ -215,7 +232,8 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.gatherAction.setChecked(True)
 
         if self.supportsMessages():
-            self.showMessage("LaptopLogger","Started Gathering Data")
+            self.showMessage("LaptopLogger", "Started Gathering Data")
+
     def startsync(self):
         logging.info("Start sync")
 
@@ -224,7 +242,6 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         # set the check box correctly
         self.syncAction.setChecked(True)
-
 
     def stop(self):
         logging.info("Stop logging")
@@ -237,7 +254,8 @@ class MainTray(QtGui.QSystemTrayIcon):
 
         self.logger.stop(self.waitgather > 0)
         if self.supportsMessages():
-            self.showMessage("LaptopLogger","Data gathering stopped")
+            self.showMessage("LaptopLogger", "Data gathering stopped")
+
     def stopsync(self):
         logging.info("Stop sync")
         self.syncAction.setChecked(False)
