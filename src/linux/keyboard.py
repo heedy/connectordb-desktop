@@ -51,22 +51,19 @@ class StreamGatherer():
 
     def __init__(self):
         self.keypress_number = Value('i', 0)
-        self.keylogger_process = None
+        # For some reason, starting then stopping this process crashes the program. The workaround
+        # is to just keep the process running in the background, even when not
+        # gathering data
+        self.keylogger_process = Process(
+            target=log_key_count, args=(self.keypress_number,))
+        self.keylogger_process.daemon = True
+        self.keylogger_process.start()
 
     def start(self, cache):
-        # Starts the background processes and stuff. The cache is passed, so that
-        # if the gatherer catches events, they can be logged as they come in
-        if self.keylogger_process is None:
-            self.keylogger_process = Process(
-                target=log_key_count, args=(self.keypress_number,))
-            self.keylogger_process.daemon = True
-            self.keylogger_process.start()
+        self.keypress_number.value = 0
 
     def stop(self):
-        if self.keylogger_process is not None:
-            self.keylogger_process.terminate()
-            self.keylogger_process = None
-            self.keypress_number.value = 0
+        pass
 
     def run(self, cache):
         kp = self.keypresses()

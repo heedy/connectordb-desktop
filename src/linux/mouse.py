@@ -54,22 +54,19 @@ class StreamGatherer():
 
     def __init__(self):
         self.click_number = Value('i', 0)
-        self.clicklogger_process = None
+        # For some reason, starting then stopping this process crashes the program. The workaround
+        # is to just keep the process running in the background, even when not
+        # gathering data
+        self.clicklogger_process = Process(
+            target=log_click_count, args=(self.click_number,))
+        self.clicklogger_process.daemon = True
+        self.clicklogger_process.start()
 
     def start(self, cache):
-        # Starts the background processes and stuff. The cache is passed, so that
-        # if the gatherer catches events, they can be logged as they come in
-        if self.clicklogger_process is None:
-            self.clicklogger_process = Process(
-                target=log_click_count, args=(self.click_number,))
-            self.clicklogger_process.daemon = True
-            self.clicklogger_process.start()
+        self.click_number.value = 0
 
     def stop(self):
-        if self.clicklogger_process is not None:
-            self.clicklogger_process.terminate()
-            self.clicklogger_process = None
-            self.click_number.value = 0
+        pass
 
     def run(self, cache):
         clk = self.clicks()
