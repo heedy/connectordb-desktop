@@ -47,6 +47,194 @@
    <property name="currentIndex">
     <number>0</number>
    </property>
+   <widget class="QWidget" name="create_tab">
+    <attribute name="title">
+     <string>Create New</string>
+    </attribute>
+    <widget class="QPushButton" name="create_button">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>380</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>DejaVu Sans</family>
+      </font>
+     </property>
+     <property name="text">
+      <string>Create</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>341</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>DejaVu Sans</family>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Create a ConnectorDB database on this computer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All of your data will be stored locally. Your database will be automatically managed. You will be able to access it at &lt;span style=&quot; font-weight:600;&quot;&gt;http://localhost:8000&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>331</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>DejaVu Sans</family>
+      </font>
+     </property>
+     <property name="title">
+      <string>User Info</string>
+     </property>
+     <widget class="QLineEdit" name="create_username">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="placeholderText">
+       <string>Create a username for ConnectorDB</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="create_password">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Create a password for your user</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="create_password2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>291</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Password</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Repeat your password</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>280</y>
+       <width>331</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>DejaVu Sans</family>
+      </font>
+     </property>
+     <property name="title">
+      <string>LaptopLogger Device</string>
+     </property>
+     <widget class="QLineEdit" name="create_devicename">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>30</y>
+        <width>201</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>laptop</string>
+      </property>
+      <property name="placeholderText">
+       <string>Create a username for ConnectorDB</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="create_deviceprivate">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>60</y>
+        <width>171</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>This Device Is Private</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Device Name:</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
    <widget class="QWidget" name="connect_tab">
     <attribute name="title">
      <string>Connect</string>
@@ -256,11 +444,35 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QWidget" name="create_tab">
+   <widget class="QWidget" name="tab">
     <attribute name="title">
-     <string>Create New</string>
+     <string>Import</string>
     </attribute>
-    <widget class="QPushButton" name="create_button">
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>341</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>DejaVu Sans</family>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Import an Existing ConnectorDB database&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Imports an exported ConnectorDB database, including all devices and data into a new ConnectorDB instance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="import_button">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -275,16 +487,16 @@
       </font>
      </property>
      <property name="text">
-      <string>Create</string>
+      <string>Import</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
+    <widget class="QGroupBox" name="groupBox_5">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>341</width>
-       <height>101</height>
+       <x>20</x>
+       <y>290</y>
+       <width>331</width>
+       <height>81</height>
       </rect>
      </property>
      <property name="font">
@@ -292,23 +504,62 @@
        <family>DejaVu Sans</family>
       </font>
      </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Create a ConnectorDB database on this computer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All of your data will be stored locally. Your database will be automatically managed by the LaptopLogger. You will be able to access it at http://localhost:8000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <property name="title">
+      <string>LaptopLogger Device</string>
      </property>
-     <property name="textFormat">
-      <enum>Qt::RichText</enum>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
+     <widget class="QLineEdit" name="import_devicename">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>20</y>
+        <width>201</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>laptop</string>
+      </property>
+      <property name="placeholderText">
+       <string>Create a username for ConnectorDB</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="import_deviceprivate">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>50</y>
+        <width>171</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>This Device Is Private</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Device Name:</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBox_6">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>120</y>
+       <y>140</y>
        <width>331</width>
-       <height>151</height>
+       <height>141</height>
       </rect>
      </property>
      <property name="font">
@@ -319,11 +570,11 @@
      <property name="title">
       <string>User Info</string>
      </property>
-     <widget class="QLineEdit" name="create_username">
+     <widget class="QLineEdit" name="import_username">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>30</y>
+        <y>20</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -334,14 +585,14 @@
        </font>
       </property>
       <property name="placeholderText">
-       <string>Create a username for ConnectorDB</string>
+       <string>Username</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="create_password">
+     <widget class="QLineEdit" name="import_password">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>70</y>
+        <y>60</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -355,14 +606,14 @@
        <enum>QLineEdit::Password</enum>
       </property>
       <property name="placeholderText">
-       <string>Create a password for your user</string>
+       <string>Password</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="create_password2">
+     <widget class="QLineEdit" name="import_password2">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>110</y>
+        <y>100</y>
         <width>291</width>
         <height>31</height>
        </rect>
@@ -380,66 +631,50 @@
       </property>
      </widget>
     </widget>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBox_7">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>280</y>
+       <y>80</y>
        <width>331</width>
-       <height>91</height>
+       <height>51</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>DejaVu Sans</family>
-      </font>
-     </property>
      <property name="title">
-      <string>LaptopLogger Device</string>
+      <string>Import Location</string>
      </property>
-     <widget class="QLineEdit" name="create_devicename">
+     <widget class="QLineEdit" name="import_location">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>30</y>
+        <x>10</x>
+        <y>20</y>
         <width>201</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>laptop</string>
+       <string/>
       </property>
       <property name="placeholderText">
-       <string>Create a username for ConnectorDB</string>
+       <string>Folder location</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="create_deviceprivate">
+     <widget class="QPushButton" name="choose_folder_button">
       <property name="geometry">
        <rect>
-        <x>110</x>
-        <y>60</y>
-        <width>171</width>
-        <height>17</height>
+        <x>220</x>
+        <y>20</y>
+        <width>101</width>
+        <height>23</height>
        </rect>
       </property>
-      <property name="text">
-       <string>This Device Is Private</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+       </font>
       </property>
       <property name="text">
-       <string>Device Name:</string>
+       <string>Choose Folder</string>
       </property>
      </widget>
     </widget>
@@ -477,7 +712,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;ConnectorDB LaptopLogger&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;ConnectorDB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -486,9 +721,9 @@
   <widget class="QLabel" name="version">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>170</y>
-     <width>51</width>
+     <x>0</x>
+     <y>0</y>
+     <width>101</width>
      <height>16</height>
     </rect>
    </property>
@@ -504,19 +739,27 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>connect_username</tabstop>
-  <tabstop>connect_password</tabstop>
-  <tabstop>connect_server</tabstop>
-  <tabstop>connect_devicename</tabstop>
-  <tabstop>connect_deviceprivate</tabstop>
-  <tabstop>login_button</tabstop>
-  <tabstop>tabWidget</tabstop>
   <tabstop>create_username</tabstop>
   <tabstop>create_password</tabstop>
   <tabstop>create_password2</tabstop>
   <tabstop>create_devicename</tabstop>
   <tabstop>create_deviceprivate</tabstop>
   <tabstop>create_button</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>connect_username</tabstop>
+  <tabstop>connect_password</tabstop>
+  <tabstop>connect_server</tabstop>
+  <tabstop>connect_devicename</tabstop>
+  <tabstop>connect_deviceprivate</tabstop>
+  <tabstop>login_button</tabstop>
+  <tabstop>import_location</tabstop>
+  <tabstop>choose_folder_button</tabstop>
+  <tabstop>import_username</tabstop>
+  <tabstop>import_password</tabstop>
+  <tabstop>import_password2</tabstop>
+  <tabstop>import_devicename</tabstop>
+  <tabstop>import_deviceprivate</tabstop>
+  <tabstop>import_button</tabstop>
  </tabstops>
  <resources/>
  <connections/>

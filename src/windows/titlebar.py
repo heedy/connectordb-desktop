@@ -5,34 +5,37 @@ import win32gui
 try:
     unicode = unicode
 except:
-    def unicode(txt,errors="lol"):
+    def unicode(txt, errors="lol"):
         # This is needed, because binary strings fail checks
         # of string schema
-        if hasattr(txt,"decode"):
+        if hasattr(txt, "decode"):
             txt = txt.decode()
         return txt
+
 
 class StreamGatherer():
     streamname = "activewindow"
     streamschema = {"type": "string"}
     nickname = "Active Window"
     datatype = "window.titlebar"
+    icon = "material:laptop_windows"
     description = "Gathers the currently active window's titlebar text"
 
     def __init__(self):
         self.prevtext = ""
 
-    def start(self,cache):
+    def start(self, cache):
         pass
+
     def stop(self):
         pass
 
-    def run(self,cache):
+    def run(self, cache):
         wt = self.windowtext()
         if wt != self.prevtext:
             self.prevtext = wt
-            cache.insert(self.streamname,wt)
+            cache.insert(self.streamname, wt)
 
-    #Gets the titlebar text of the currently active window
+    # Gets the titlebar text of the currently active window
     def windowtext(self):
-        return unicode(win32gui.GetWindowText(win32gui.GetForegroundWindow()),errors="ignore")
+        return unicode(win32gui.GetWindowText(win32gui.GetForegroundWindow()), errors="ignore")

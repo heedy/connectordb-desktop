@@ -1,7 +1,10 @@
-import pyHook, pythoncom
+import pyHook
+import pythoncom
 from multiprocessing import Process, Value
 
-#This function is run in its own process to allow it to gather keypresses
+# This function is run in its own process to allow it to gather keypresses
+
+
 def log_click_count(val):
     def OnMouseEvent(event):
         val.value += 1
@@ -13,22 +16,25 @@ def log_click_count(val):
 
     pythoncom.PumpMessages()
 
+
 class StreamGatherer():
     streamname = "mouseclicks"
     streamschema = {"type": "integer"}
     nickname = "Mouse Clicks"
     description = "Gathers the number of clicks made with the mouse"
     datatype = "action.count"
+    icon = "material:mouse"
 
     def __init__(self):
-        self.click_number = Value('i',0)
+        self.click_number = Value('i', 0)
         self.clicklogger_process = None
 
-    def start(self,cache):
+    def start(self, cache):
         # Starts the background processes and stuff. The cache is passed, so that
         # if the gatherer catches events, they can be logged as they come in
         if self.clicklogger_process is None:
-            self.clicklogger_process = Process(target=log_click_count,args=(self.click_number,))
+            self.clicklogger_process = Process(
+                target=log_click_count, args=(self.click_number,))
             self.clicklogger_process.daemon = True
             self.clicklogger_process.start()
 
@@ -38,13 +44,12 @@ class StreamGatherer():
             self.clicklogger_process = None
             self.click_number.value = 0
 
-    def run(self,cache):
+    def run(self, cache):
         clk = self.clicks()
         if clk > 0:
-            cache.insert(self.streamname,clk)
+            cache.insert(self.streamname, clk)
 
-
-    #Gets the number of keypresses that are logged, and reset the counter
+    # Gets the number of keypresses that are logged, and reset the counter
     def clicks(self):
         v = self.click_number.value
         self.click_number.value = 0

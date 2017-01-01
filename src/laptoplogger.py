@@ -1,233 +1,127 @@
-from connectordb.logger import Logger
+"""
+    The LaptopLogger gathers computer usage data in the background, and optionally manages
+    a local ConnectorDB database. 
 
-import platform
-import threading
+    The LaptopLogger creates an icon in the system tray, which upon right click offers up several
+    options. A left-click opens up the connected ConnectorDB instance in the browser.
+
+
+    Internals:
+        The GUI uses the underlying DataManager to handle all functionality. You can directly use 
+        DataManager by running 
+            python datamanager.py
+        which will run headless.
+
+        The LaptopLogger simply adds a GUI. The main issue with GUI in general is that it is callback-based,
+        which means that when initially running laptoplogger, we don't actually know if DataManager will initialize,
+        or whether it will need new information. The LaptopLogger therefore checks if the DataManager is set up itself
+        before running it, so that it can perform initialization asynchronously if necessary.
+"""
+
 import logging
+import argparse
+import sys
+import signal
 import os
-from plugins import getplugins
+
 import files
-import cdbmanager
+from datamanager import DataManager
+from guilogin import LoginForm
+from guimaintray import MainTray
 
+if __name__ == "__main__":
 
-class LaptopLogger():
-    def __init__(self,firstrun_callback=None):
-        self.firstrun_callback = firstrun_callback
+    # Run the entire program in a big try catch block, so that we can log any
+    # error that shows up
+    try:
 
-        self.syncer = None
-        self.isrunning = False
-        self.issyncing = False
+        # This variable is used to hold the main DataManager instance. It will be initialized manually
+        # based on the state to allow simple setup without complex code in the
+        # DataManager itself
+        dm = None
 
-        #Get the data gatherers. currentgatherers is the ones that are set to ON
-        # gatherers is ALL of them
-        self.currentgatherers = {}
-        self.gatherers = {}
-        for p in getplugins():
-            g = p()
-            self.currentgatherers[g.streamname] = g
-            self.gatherers[g.streamname] = g
+        # Allow catching ctrl + c when running in terminal
+        def signalHandler(a, b):
+            global dm
+            logging.warning("Caught Ctrl+c. Exiting application.")
+            if dm is not None:
+                logging.info("Shutting down DataManager")
+                dm.exit()
+                dm = None
+            sys.exit(0)
+        signal.signal(signal.SIGINT, signalHandler)
 
-        filedir = files.getFileFolder()
-        cachefile = os.path.join(filedir,"cache.db")
-        logging.info("Opening database " + cachefile)
-        self.cache = Logger(cachefile,on_create=self.create_callback)
+        arg_parser = argparse.ArgumentParser(
+            description="Gathers usage data from computer, and optionally manages a ConnectorDB database.")
+        arg_parser.add_argument("-l", "--loglevel", default="INFO",
+                                help="The level at which to print debug statements to log")
+        arg_parser.add_argument("-o", "--logfile", default="",
+                                help="File to use to write logs")
 
-        # Disable the relevant gatherers
-        for g in self.cache.data["disabled_gatherers"]:
-            if g in self.currentgatherers:
-                del self.currentgatherers[g]
+        arg_parser.add_argument("-f", "--folder", default=files.getDefaultFolderLocation(),
+                                help="Location in which to put all of LaptopLogger's data")
 
-        # If ConnectorDB is managed, start the executable
-        self.localdir = os.path.join(filedir,"db")
-        self.localrunning = False
-        self.runLocal()
+        args = arg_parser.parse_args()
 
-        #Start running the logger if it is supposed to be running
-        if self.cache.data["isrunning"]:
-            self.start()
-        if self.cache.data["isbgsync"]:
-            self.startsync()
+        # Set up logging, so that we don't have to worry about it later
 
-    # This can be used to start a local version of ConnectorDB
-    def runLocal(self):
-        if self.cache.data["runlocal"] and not self.localrunning:
-            logging.info("Starting ConnectorDB server")
-            try:
-                self.localrunning = True
-                retcode = cdbmanager.Manager(self.localdir).start()
-                # The method needed to start on windows doesn't return error codes.
-                if (platform.system()=="Windows"):
-                    return True
-                logging.debug("Start return code: " +str(retcode))
-                return retcode==0
-            except Exception as e:
-                logging.error(str(e))
-            self.localrunning = False
-            return False
-        return False
+        numeric_level = getattr(logging, args.loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError('Invalid log level: %s' % args.loglevel)
+        logging.basicConfig(format='%(asctime)s %(message)s',
+                            level=numeric_level, filename=args.logfile)
 
-    def create_callback(self,c):
-        logging.info("Creating new cache file...")
+        try:
+            from PyQt5 import QtWidgets, QtCore
+            QtGui = QtWidgets
+        except:
+            logging.warning("Couldn't find QT5 - falling back to Qt4")
+            from PyQt4 import QtGui, QtCore
 
-        c.data = {
-            "runlocal": False,      # Whether or not to run a local ConnectorDB instance (the ConnectorDB server)
-            "isrunning": False,    # Whether or not the logger is currently gathering data. This NEEDS to be false - it is set to true later
-            "isbgsync": False,      # Whether or not the logger automatically syncs with ConnectorDB. Needs to be false - automatically set to True later
-            "gathertime": 4.0,     # The logger gathers datapoints every this number of seconds
-            "disabled_gatherers": [], # The names of disabled gatherers
-        }
-        c.syncperiod = 60*60    # Sync once an hour
+        app = QtGui.QApplication(sys.argv)
 
-        #We now need to set the API key
-        if self.firstrun_callback is not None:
-            self.firstrun_callback(c)
+        # We need to run this timer to allow the app to correctly catch ctrl c
+        # because QT takes over python.
+        # http://stackoverflow.com/questions/4938723/what-is-the-correct-way-to-make-my-pyqt-application-quit-when-killed-from-the-co
+        timer = QtCore.QTimer()
+        timer.start(500)
+        # Let the interpreter run each 500 ms.
+        timer.timeout.connect(lambda: None)
 
-    def removegatherer(self,g):
-        logging.info("Removing gatherer " + g)
-        if g in self.currentgatherers:
-            del self.currentgatherers[g]
-            if self.isrunning:
-                self.gatherers[g].stop()
-        # Save the setting
-        d = self.cache.data
-        if not g in d["disabled_gatherers"]:
-            d["disabled_gatherers"].append(g)
-            self.cache.data = d
+        # This variable will hold the main tray icon that is used to control the LaptopLogger. it is initialized in the function
+        # shown below. This callback-based setup is because we need to know several pieces of information from the login screen
+        # before we can initialize the DataManager which is needed for the
+        # MainTray to work
+        maintray = None
 
-    def addgatherer(self,g):
-        logging.info("Adding gatherer " + g)
-        if not g in self.currentgatherers:
-            if self.isrunning:
-                self.gatherers[g].start(self.cache)
-            self.currentgatherers[g] = self.gatherers[g]
-        # Save the setting
-        d = self.cache.data
-        if g in d["disabled_gatherers"]:
-            d["disabled_gatherers"].remove(g)
-            self.cache.data = d
+        def initializeMainTray(dataManager):
+            logging.info("Setting up tray icon")
+            global dm, maintray
+            dm = dataManager
+            maintray = MainTray(dm)
+            maintray.show()
 
+        # We can't use DataManager directly here, since QT must run in its event loop. This means that we must initialize
+        # the setup (login) dialog and main tray so that they do not block. This means that we need to perform a bit of gymnastics
+        # so that the DataManager is initialized without ever blocking. We do this
+        # by manually checking if the version file exists.
+        loginForm = None
+        if os.path.exists(os.path.join(args.folder, "laptoplogger.json")):
+            # Everything is assumed to exist. We can therefore set dm directly, since it is initialized
+            # The create callback is assumed to be unnecessary
+            initializeMainTray(DataManager(args.folder, lambda x: None))
 
+        else:
+            logging.info(
+                "Could not find connectordb.json. Showing login options")
+            # The LaptopLogger is assumed not to be set up. We show the setup
+            # options, and after the login completes successfully, we set the main DataManager
+            # and show the main tray icon through a callback
 
-    def gather(self):
-        for g in self.currentgatherers:
-            self.currentgatherers[g].run(self.cache)
+            loginForm = LoginForm(args.folder, initializeMainTray)
+            loginForm.show()
 
-        self.syncer = threading.Timer(self.cache.data["gathertime"],self.gather)
-        self.syncer.daemon = True
-        self.syncer.start()
+        sys.exit(app.exec_())
 
-    # Whether or not to run data gathering
-    def start(self):
-        if not self.isrunning:
-            logging.info("Start acquisition")
-            d = self.cache.data
-            d["isrunning"] = True
-            self.cache.data = d
-
-            #First, make sure all streams are ready to go in the cache
-            for g in self.gatherers:
-                if not g in self.cache:
-                    gatherer = self.gatherers[g]
-                    logging.info("Adding {} stream ({})".format(g,self.gatherers[g].streamschema))
-                    nickname = ""
-                    if hasattr(gatherer,"nickname"):
-                        nickname = gatherer.nickname
-                    datatype = ""
-                    if hasattr(gatherer,"datatype"):
-                        datatype = gatherer.datatype
-                    self.cache.addStream(g,gatherer.streamschema,description=gatherer.description,nickname=nickname,datatype=datatype)
-
-            for g in self.currentgatherers:
-                self.currentgatherers[g].start(self.cache)
-
-            self.isrunning = True
-
-            self.gather()
-
-    # Whether or not to run background syncer
-    def startsync(self):
-        if not self.issyncing:
-            logging.info("Start background sync")
-            d = self.cache.data
-            d["isbgsync"] = True
-            self.cache.data = d
-            self.cache.start()
-            self.issyncing = True
-
-
-    def stop(self,temporary=False):
-        logging.info("Stop acquisition")
-
-        if self.syncer is not None:
-            self.syncer.cancel()
-            self.syncer = None
-
-        for g in self.currentgatherers:
-            self.currentgatherers[g].stop()
-
-        if not temporary:
-            d = self.cache.data
-            d["isrunning"] = False
-            self.cache.data = d
-
-        self.isrunning = False
-
-    def stopsync(self):
-        self.cache.stop()
-        d = self.cache.data
-        d["isbgsync"] = False
-        self.cache.data = d
-        self.issyncing= False
-
-    def exit(self):
-        # exit performs cleanup - in this case, shutting down the ConnectorDB database on exit
-        if self.cache.data["runlocal"] and self.localrunning:
-            logging.info("Shutting down ConnectorDB server")
-            try:
-                cdbmanager.Manager(self.localdir).stop()
-                self.localrunning = False
-            except:
-                pass
-
-# This code here allows running the app without a GUI - it runs the logger directly
-# from the underlying data-gathering plugins.
-if __name__=="__main__":
-    # https://stackoverflow.com/questions/954834/how-do-i-use-raw-input-in-python-3-1
-    try: input = raw_input
-    except NameError: pass
-
-    import time
-    import getpass
-    import platform
-    from connectordb import ConnectorDB,CONNECTORDB_URL
-
-    logging.basicConfig(level=logging.DEBUG)
-
-    def apikey_callback(c):
-        #Allow the user to choose a custom server
-        s = input("Server [DEFAULT: %s]:"%(CONNECTORDB_URL,))
-        print(c.serverurl)
-        if s!="":
-            logging.info("Setting Server URL to "+ s)
-            c.serverurl = s
-
-        u = input("Username: ")
-        p = getpass.getpass()
-
-        cdb = ConnectorDB(u,p,c.serverurl)
-
-        dev = cdb.user[platform.node()]
-        if not dev.exists():
-            logging.info("Creating device "+platform.node())
-            dev.create()
-        c.apikey = dev.apikey
-
-
-    c = LaptopLogger(apikey_callback)
-    c.start()
-
-    # background sync is not enabled by default, since the gui has issues.
-    # enable it right now in headless mode
-    c.startsync()
-
-    while True:
-        time.sleep(1)
+    except Exception as e:
+        logging.critical(str(e))

@@ -5,10 +5,10 @@
 try:
     unicode = unicode
 except:
-    def unicode(txt,errors="lol"):
+    def unicode(txt, errors="lol"):
         # This is needed, because binary strings fail checks
         # of string schema
-        if hasattr(txt,"decode"):
+        if hasattr(txt, "decode"):
             txt = txt.decode()
         return txt
 
@@ -23,34 +23,38 @@ NET_ACTIVE_WINDOW = disp.intern_atom('_NET_ACTIVE_WINDOW')
 
 root.change_attributes(event_mask=Xlib.X.FocusChangeMask)
 
+
 class StreamGatherer():
     streamname = "activewindow"
     streamschema = {"type": "string"}
     nickname = "Active Window"
     datatype = "window.titlebar"
     description = "Gathers the currently active window's titlebar text"
+    icon = "material:laptop_windows"
 
     def __init__(self):
         self.prevtext = ""
 
-    def start(self,cache):
+    def start(self, cache):
         pass
+
     def stop(self):
         pass
 
-    def run(self,cache):
+    def run(self, cache):
         wt = self.windowtext()
         if wt != self.prevtext:
             self.prevtext = wt
-            cache.insert(self.streamname,wt)
+            cache.insert(self.streamname, wt)
 
-    #Gets the titlebar text of the currently active window
+    # Gets the titlebar text of the currently active window
     def windowtext(self):
         try:
-            window_id = root.get_full_property(NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
+            window_id = root.get_full_property(
+                NET_ACTIVE_WINDOW, Xlib.X.AnyPropertyType).value[0]
             window = disp.create_resource_object('window', window_id)
             window.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
             window_name = window.get_full_property(NET_WM_NAME, 0).value
-        except Xlib.error.XError: #simplify dealing with BadWindow
+        except Xlib.error.XError:  # simplify dealing with BadWindow
             window_name = ""
-        return unicode(window_name,errors="ignore")
+        return unicode(window_name, errors="ignore")
