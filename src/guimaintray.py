@@ -42,6 +42,9 @@ class MainTray(QtGui.QSystemTrayIcon):
         self.dm.logger.onsyncfail = self.onsyncfail
         self.dm.logger.onsync = self.onsyncsuccess
 
+        # We need a widget to do shit. So make a widget...
+        self.w = QtGui.QWidget()
+
         # Load the icons
         mydir = os.path.dirname(__file__)
         self.idleicon = QIcon(os.path.join(mydir, 'resources/logo.png'))
@@ -110,6 +113,12 @@ class MainTray(QtGui.QSystemTrayIcon):
         stop15.setToolTip("Stop gathering data for 15 minutes")
         stop15.triggered.connect(self.stop15)
 
+        if self.dm.ismanaging:
+            # If we are using a managed database, add an export option
+            self.menu.addSeparator()
+            exportAction = self.menu.addAction("Export")
+            exportAction.triggered.connect(self.exportButtonPressed)
+
         self.menu.addSeparator()
 
         exitAction = self.menu.addAction("Exit")
@@ -143,6 +152,32 @@ class MainTray(QtGui.QSystemTrayIcon):
 
     def togglepluginhover(self, name, action):
         QtGui.QToolTip.showText(QCursor.pos(), action.toolTip())
+
+    def exportButtonPressed(self):
+        logging.info("Choose export folder")
+        file = str(QtGui.QFileDialog.getExistingDirectory(
+            self.w, "Select Export Directory"))
+        logging.debug("Using folder " + file)
+
+        # Now the messed up part: we need to delete the folder, since the
+        # export creates an export directory
+        if file != "":
+            try:
+                os.rmdir(file)
+            except:
+                logging.error("Could not remove directory in prep for export")
+                QtGui.QMessageBox.critical(
+                    self.w, "Nonempty Directory", "Export folder must be empty!")
+                return
+            try:
+                self.dm.manager.exportDatabase(file)
+            except Exception as e:
+                logging.error(str(e))
+                QtGui.QMessageBox.critical(self.w, "Export Failed", str(e))
+                return
+        logging.info("Export Complete")
+        QtGui.QMessageBox.information(
+            self.w, "Export Complete", "Export Finished!")
 
     def exitButtonPressed(self):
         logging.info("Exiting...")

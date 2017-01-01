@@ -79,6 +79,7 @@ if __name__ == "__main__":
             from PyQt4 import QtGui, QtCore
 
         app = QtGui.QApplication(sys.argv)
+        app.setQuitOnLastWindowClosed(False)
 
         # We need to run this timer to allow the app to correctly catch ctrl c
         # because QT takes over python.
