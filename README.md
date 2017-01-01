@@ -33,7 +33,7 @@ Our goal is to support at the very least:
 ## Installing
 
 ### Windows
-Use the release installer (go to releases tab in github). If the installer fails, you can get it running
+[Download from website](https://connectordb.io/download). The LaptopLogger is included in desktop versions of ConnectorDB. If the installer fails, you can get it running
 by installing Python on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
 ```
 apsw

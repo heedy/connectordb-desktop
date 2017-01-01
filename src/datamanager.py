@@ -150,7 +150,7 @@ class DataManager():
             "gathertime": 4.0,     # The logger gathers datapoints every this number of seconds
             "disabled_plugins": [],  # The names of disabled plugins
         }
-        c.syncperiod = 30 * 60    # Sync once every half hour
+        c.syncperiod = 20 * 60    # Sync once every 20 minutes
 
     def disablePlugin(self, p):
         logging.info("Disabling plugin " + p)
