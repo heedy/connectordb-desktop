@@ -169,6 +169,10 @@ class DataManager():
         if not p in self.currentplugins:
             if self.isgathering:
                 self.plugins[p].start(self.logger)
+        d = self.logger.data
+        if p in d["disabled_plugins"]:
+            d["disabled_plugins"].remove(p)
+            self.logger.data = d
 
     def startgathering(self):
         if not self.isgathering:
