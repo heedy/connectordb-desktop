@@ -47,7 +47,7 @@ running this in CMD:
 pip install connectordb
 ```
 
-...and double clicking on `guilaptoplogger.py`.
+...and double clicking on `laptoplogger.py`.
 
 With a manual install, you will have to figure out how to auto-run on start.
 
@@ -59,7 +59,7 @@ sudo pip install connectordb
 
 git clone https://github.com/connectordb/connectordb-laptoplogger
 cd ./connectordb-laptoplogger/src
-python guilaptoplogger.py #If running headless, use python laptoplogger.py
+python laptoplogger.py
 ```
 
 If you don't have PyQT5, it automatically falls back to using PyQT4.
@@ -69,6 +69,18 @@ It is up to you to set it up to run on login right now - use your desktop enviro
 ### Mac
 
 Mac version is not ready yet: [see what still needs to be done](https://github.com/connectordb/connectordb-laptoplogger/issues/2)
+
+## Headless
+
+The Laptop Logger includes a headless version that can be run on servers. Instead of running `laptoplogger.py`,
+you can start the headless version by running:
+
+```
+python datamanager.py
+```
+
+Note that the plugins are set up to run in GUI environments, so you would have to remove the plugins that depend on a GUI
+before running. The headless version makes it very easy to keep track of your servers with minimal setup.
 
 ## Plugins
 
@@ -91,6 +103,7 @@ class StreamGatherer():
 	# A description to use when showing this gatherer's info in options
 	description = "Gathers the currently active window's titlebar text"
 	nickname = "Active Window"
+	icon = "material:laptop"
 
 	def start(self,logger):
 		# start is called when the logger has begun acquisition of data.
@@ -105,7 +118,7 @@ class StreamGatherer():
 		pass
 
 	def run(self,logger):
-		# run is called each user-defined time period. The default is once a minute.
+		# run is called each user-defined time period. The default is once every 4 seconds.
 		# this is the perfect place to insert data into the logger. Running logger.insert is
 		# the expected way to insert data. It will be synced with the
 		# ConnectorDB server automatically.
