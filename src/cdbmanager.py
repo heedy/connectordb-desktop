@@ -3,11 +3,16 @@
 
 import os
 import sys
-import subprocess
 import logging
 import files
 import shutil
 import platform
+
+# Python 2 requires subprocess32
+try:
+    import subprocess32 as subprocess
+except:
+    import subprocess
 
 
 class Manager(object):

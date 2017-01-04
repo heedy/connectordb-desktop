@@ -34,12 +34,13 @@ Our goal is to support at the very least:
 
 ### Windows
 [Download from website](https://connectordb.io/download). The LaptopLogger is included in desktop versions of ConnectorDB. If the installer fails, you can get it running
-by installing Python on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
+by installing Python 2 on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
 ```
 apsw
 pyqt4
 pywin32
 pyhook
+subprocess32
 ```
 
 running this in CMD:
@@ -50,6 +51,8 @@ pip install connectordb
 ...and double clicking on `laptoplogger.py`.
 
 With a manual install, you will have to figure out how to auto-run on start.
+
+Note: Python 3 is not supported on windows due to issues in libraries used to gather data.
 
 ### Linux
 
@@ -63,6 +66,8 @@ python laptoplogger.py
 ```
 
 If you don't have PyQT5, it automatically falls back to using PyQT4.
+
+If using python 2, you will also need `subprocess32`.
 
 It is up to you to set it up to run on login right now - use your desktop environment's startup manager.
 

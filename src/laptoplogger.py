@@ -29,7 +29,8 @@ from datamanager import DataManager
 from guilogin import LoginForm
 from guimaintray import MainTray
 
-if __name__ == "__main__":
+
+def runapp():
 
     # Run the entire program in a big try catch block, so that we can log any
     # error that shows up
@@ -126,3 +127,6 @@ if __name__ == "__main__":
 
     except Exception as e:
         logging.critical(str(e))
+
+if __name__ == "__main__":
+    runapp()
