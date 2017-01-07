@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Unfortunately, a desktop release cannot be made without a windows machine, since pyinstaller
+# requries a working windows installation to work. Fortunately, we can set up everything BUT
+# the windows installer by running this script. The script assumes that the connectordb git
+# is cloned in ../connectordb, and makerelease was already run on connectordb, giving us all the releases
+# in ../connectordb/release. We create our own release folder here, and set up the desktop versions of connectordb.
+
+VERSION=`../connectordb/bin/connectordb --semver`
+
+echo -e "\033[1mBuilding ConnectorDB Desktop ${VERSION}\033[0m"
+
+# Clear out the release directory
+rm -rf ./release
+mkdir ./release
+
+function copyfiles {
+    echo -e "\033[1m-----> Setting up $1 release...\033[0m"
+    mkdir ./release/${NAME}
+}
+
+# For each release type that was built for connectordb, we create a corresponding connectordb desktop release
+for DIR in ../connectordb/release/*/; do
+    echo $DIR
+    NEWDIR=./release/connectordb_desktop${DIR#*server}
+    echo $NEWDIR
+done

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# This is the linux desktop version of ConnectorDB. It simply runs the laptoplogger.
+cd "${0%/*}/src"
+python laptoplogger.py
