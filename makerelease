@@ -40,7 +40,7 @@ cd ./release
 for DIR in *windows*; do
     rm ${DIR}/connectordb
     cp ../wininstaller.nsi ${DIR}/
-    cp ../windowsbuild.bat $DIR}/
+    cp ../windowsbuild.bat ${DIR}/
 done
 
 # Now compress and sign the archives

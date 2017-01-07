@@ -5,6 +5,8 @@ This is the [ConnectorDB](https://connectordb.io) frontend for logging the thing
 
 The laptoplogger has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
 
+The LaptopLogger can also manage a ConnectorDB database for simple use. It is the default interface for the desktop version of ConnectorDB.
+
 ## Logging
 The built-in plugins log several things, but the logged quantities depend on the operating system.
 By default, we try to have plugins be consistent across OS, but it is not a requirement.
@@ -27,32 +29,11 @@ Our goal is to support at the very least:
 <img src="https://raw.githubusercontent.com/connectordb/connectordb-laptoplogger/master/laptoplogger.png" width="500"/>
 
 
-## Issues
-- In some cases, login window has misaligned fonts.
-
 ## Installing
 
-### Windows
-[Download from website](https://connectordb.io/download). The LaptopLogger is included in desktop versions of ConnectorDB. If the installer fails, you can get it running
-by installing Python 2 on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
-```
-apsw
-pyqt4
-pywin32
-pyhook
-subprocess32
-```
+To get a working release, [Download from website](https://connectordb.io/download).
 
-running this in CMD:
-```
-pip install connectordb
-```
-
-...and double clicking on `laptoplogger.py`.
-
-With a manual install, you will have to figure out how to auto-run on start.
-
-Note: Python 3 is not supported on windows due to issues in libraries used to gather data.
+If you would like to stay recent, you can also get a bleeding-edge development build [here](https://keybase.pub/dkumor/connectordb)
 
 ### Linux
 
@@ -60,9 +41,12 @@ Note: Python 3 is not supported on windows due to issues in libraries used to ga
 sudo apt-get install python-xlib python-qt5 python-apsw python-pip
 sudo pip install connectordb
 
+# Instead of git clone, it is recommended that you download the desktop release
+# from https://connectordb.io/downloads - the desktop release will include precompiled
+# ConnectorDB binaries.
 git clone https://github.com/connectordb/connectordb-laptoplogger
-cd ./connectordb-laptoplogger/src
-python laptoplogger.py
+cd ./connectordb-laptoplogger
+./connectordb
 ```
 
 If you don't have PyQT5, it automatically falls back to using PyQT4.
@@ -70,6 +54,34 @@ If you don't have PyQT5, it automatically falls back to using PyQT4.
 If using python 2, you will also need `subprocess32`.
 
 It is up to you to set it up to run on login right now - use your desktop environment's startup manager.
+
+
+### Windows
+
+**On Windows, you can run the installer from [here](https://connectordb.io/download), which will take care of everything.**
+
+If the installer fails, you can get LaptopLogger running
+by installing Python 2 on your machine, installing the following packages from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/):
+```
+apsw
+pyqt4
+pywin32
+pyhook
+```
+You will need to run the setup scripts for pywin32: `python.exe Scripts\pywin32_postinstall.py -install`
+
+Finally, run the following in shell:
+```
+pip install connectordb
+pip install subprocess32
+```
+
+...and you are done. You can check if it is working by double clicking on `laptoplogger.py`.
+
+With a manual install, you will have to figure out how to auto-run on start.
+
+Note: Python 3 is not supported on windows due to issues in libraries used to gather data.
+
 
 ### Mac
 
@@ -134,3 +146,18 @@ class StreamGatherer():
 Create a new file with your plugin's code, and put it in the `src/{windows,linux,osx,all}` directory depending on which operating systems your code works on. Upon restarting LaptopLogger, your plugin will be detected and set up automatically.
 
 We will happily accept pull requests for useful plugins!
+
+## Releases
+
+To make a new release, you will need to first run `makerelease` for connectordb 
+in `../connectordb`, after which you can run `makerelease` for laptoplogger in this directory.
+
+To build the windows installer, follow the windows instructions. After installing all dependencies,
+go to the windows folder in `./release` (which should have been created when running makerelease), and run:
+```
+pip install pyinstaller
+./windowsbuild.bat
+```
+
+Finally, install [NSIS](http://nsis.sourceforge.net/Main_Page), right click on `wininstaller.nsi`,
+and click on Compile NSIS Script.

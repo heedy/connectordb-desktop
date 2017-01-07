@@ -1,23 +1,23 @@
 !include "MUI2.nsh"
 
 
-!define APPNAME "LaptopLogger"
+!define APPNAME "ConnectorDB Desktop"
 !define COMPANYNAME "ConnectorDB"
-!define DESCRIPTION "Log the events that happen on your laptop to ConnectorDB"
+!define DESCRIPTION "Manage a ConnectorDB database and log your computer activity"
 # These three must be integers
 !define VERSIONMAJOR 1
-!define VERSIONMINOR 1
+!define VERSIONMINOR 2
 !define VERSIONBUILD 1
 # These will be displayed by the "Click here for support information" link in "Add/Remove Programs"
 # It is possible to use "mailto:" links in here to open the email client
-!define HELPURL "http://connectordb.com" # "Support Information" link
-!define UPDATEURL "http://connectordb.com" # "Product Updates" link
-!define ABOUTURL "http://connectordb.com" # "Publisher" link
+!define HELPURL "https://connectordb.io" # "Support Information" link
+!define UPDATEURL "https://connectordb.io" # "Product Updates" link
+!define ABOUTURL "https://connectordb.io" # "Publisher" link
 # This is the size (in kB) of all the files copied into "Program Files"
 !define INSTALLSIZE 43233
 
 !include "MUI2.nsh"
-
+!define MUI_ICON "src/resources/logo.ico"
 
  
 RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on)
@@ -27,7 +27,7 @@ InstallDir "$PROGRAMFILES64\${COMPANYNAME}\${APPNAME}"
 # This will be in the installer/uninstaller's title bar
 Name "${COMPANYNAME} - ${APPNAME}"
 Icon "src/resources/logo.ico"
-OutFile "laptoplogger_install.exe"
+OutFile "ConnectorDB Setup.exe"
 
 
 !define MUI_ABORTWARNING
@@ -37,7 +37,7 @@ OutFile "laptoplogger_install.exe"
     !define MUI_FINISHPAGE_NOAUTOCLOSE
     !define MUI_FINISHPAGE_RUN
     #!define MUI_FINISHPAGE_RUN_NOTCHECKED
-    !define MUI_FINISHPAGE_RUN_TEXT "Run LaptopLogger"
+    !define MUI_FINISHPAGE_RUN_TEXT "Run ConnectorDB"
     !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
 !insertmacro MUI_PAGE_FINISH
 
@@ -67,7 +67,7 @@ Section "Install"
 	# Files for the install directory - to build the installer, these should be in the same directory as the install script (this file)
 	setOutPath $INSTDIR
 	# Files added here should be removed by the uninstaller (see section "uninstall")
-	file /a /r "dist\laptoplogger\"
+	file /a /r "dist\ConnectorDB Desktop\"
 	# Add any other files for the install directory (license files, app data, etc) here
  
 	# Uninstaller - See function un.onInit and section "uninstall" for configuration
@@ -75,7 +75,7 @@ Section "Install"
  
 	# Start Menu
 	createDirectory "$SMPROGRAMS\${COMPANYNAME}"
-	createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\laptoplogger.exe" "" "$INSTDIR\resources\logo.ico"
+	createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\ConnectorDB Desktop.exe" "" "$INSTDIR\resources\logo.ico"
     
     SetRegView 64
     
@@ -99,7 +99,7 @@ Section "Install"
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
     
     # Run on startup
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APPNAME}" "$INSTDIR\laptoplogger.exe"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${APPNAME}" "$INSTDIR\ConnectorDB Desktop.exe"
 SectionEnd
  
 ;--------------------------------
