@@ -25,6 +25,7 @@ class StreamGatherer():
     streamschema = {"type": "boolean"}
     datatype = "toggle.active"
     description = "False if the computer is idle (no user input)"
+    icon = "material:hourglass_empty"
 
     def __init__(self):
         self.prevcheck = time.time()

@@ -6,22 +6,58 @@
 # is cloned in ../connectordb, and makerelease was already run on connectordb, giving us all the releases
 # in ../connectordb/release. We create our own release folder here, and set up the desktop versions of connectordb.
 
-VERSION=`../connectordb/bin/connectordb --semver`
+# Once this finishes, it is your job to generate the windows installer using the n
 
-echo -e "\033[1mBuilding ConnectorDB Desktop ${VERSION}\033[0m"
+echo -e "\033[1mBuilding ConnectorDB Desktop\033[0m"
 
-# Clear out the release directory
-rm -rf ./release
+# Clean working directory
+git clean -d -f -x -q
+
 mkdir ./release
-
-function copyfiles {
-    echo -e "\033[1m-----> Setting up $1 release...\033[0m"
-    mkdir ./release/${NAME}
-}
 
 # For each release type that was built for connectordb, we create a corresponding connectordb desktop release
 for DIR in ../connectordb/release/*/; do
-    echo $DIR
+    echo -e "... connectordb_desktop${DIR#*server}"
     NEWDIR=./release/connectordb_desktop${DIR#*server}
-    echo $NEWDIR
+    mkdir $NEWDIR
+    
+    # Copy the laptoplogger python files
+    cp -a ./src ${NEWDIR}src
+    
+    # Copy the connectordb binaries
+    cp -a $DIR ${NEWDIR}src/bin
+    
+    # ...aaand copy the final stuff
+    cp README.md ${NEWDIR}
+    cp LICENSE ${NEWDIR}
+    cp connectordb ${NEWDIR}
+    
 done
+
+cd ./release
+
+#Finally, add the windows-specific files to the windows release directories
+for DIR in *windows*; do
+    rm ${DIR}/connectordb
+    cp ../wininstaller.nsi ${DIR}/
+    cp ../windowsbuild.bat $DIR}/
+done
+
+# Now compress and sign the archives
+echo -e "\033[1mCompressing and Signing Releases\033[0m"
+
+
+for DIR in ./*/; do
+    NAME=${DIR%/}
+    echo .. ${NAME}.tar.gz
+    
+    # generate the tar.gz of the package
+    tar -czf ${NAME}.tar.gz ${NAME}
+    
+    # ... and generate the signature
+    gpg --armor --detach-sig -o ${NAME}.tar.gz.asc ${NAME}.tar.gz
+done
+cd ..
+
+echo "Done."
+
