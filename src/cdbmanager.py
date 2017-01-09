@@ -159,6 +159,6 @@ if (__name__ == "__main__"):
         if (m.start() != 0):
             print("START FAILED")
         else:
-            webbrowser.open("http://localhost:8000")
+            webbrowser.open("http://localhost:3124")
             input()
             m.stop()

@@ -84,7 +84,7 @@
       </font>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Create a ConnectorDB database on this computer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All of your data will be stored locally. Your database will be automatically managed. You will be able to access it at &lt;span style=&quot; font-weight:600;&quot;&gt;http://localhost:8000&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Create a ConnectorDB database on this computer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;All of your data will be stored locally. Your database will be automatically managed. You will be able to access it at &lt;span style=&quot; font-weight:600;&quot;&gt;http://localhost:3124&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>

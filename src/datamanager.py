@@ -312,7 +312,7 @@ class DataManager():
             # really invalid
             def deviceOverwriteCallback(dname):
                 return False
-            self.login(username, password, devicename, "http://localhost:8000",
+            self.login(username, password, devicename, "http://localhost:3124",
                        isprivate, deviceOverwriteCallback)
         except:
             self.manager.stop()
@@ -325,7 +325,7 @@ class DataManager():
         self.ismanaging = True  # createAndImport leaves the database running
 
         try:
-            self.login(username, password, devicename, "http://localhost:8000",
+            self.login(username, password, devicename, "http://localhost:3124",
                        isprivate, deviceOverwriteCallback)
         except:
             self.manager.stop()
