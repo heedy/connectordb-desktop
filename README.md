@@ -1,11 +1,12 @@
-The Laptop Logger
+ConnectorDB Desktop
 ==================
 
-This is the [ConnectorDB](https://connectordb.io) frontend for logging the things you do on your PC. The LaptopLogger includes a headless version for running on servers, and a cross-platform QT GUI for use on your primary machine.
+This is the [ConnectorDB](https://connectordb.io) frontend for logging the things you do on your PC. 
+The desktop app includes a headless version for running on servers, and a cross-platform QT GUI for use on your primary machine.
 
-The laptoplogger has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
+The app has a simple plugin system, such that anyone can track the system stats they want with only a few lines of code.
 
-The LaptopLogger can also manage a ConnectorDB database for simple use. It is the default interface for the desktop version of ConnectorDB.
+It can also manage a ConnectorDB database for simple use. It is the default interface for the desktop version of ConnectorDB.
 
 ## Logging
 The built-in plugins log several things, but the logged quantities depend on the operating system.
@@ -44,9 +45,9 @@ sudo pip install connectordb
 # Instead of git clone, it is recommended that you download the desktop release
 # from https://connectordb.io/downloads - the desktop release will include precompiled
 # ConnectorDB binaries.
-git clone https://github.com/connectordb/connectordb-laptoplogger
+git clone https://github.com/connectordb/connectordb-desktop
 cd ./connectordb-laptoplogger
-./connectordb
+./connectordb-desktop
 ```
 
 If you don't have PyQT5, it automatically falls back to using PyQT4.
@@ -76,7 +77,7 @@ pip install connectordb
 pip install subprocess32
 ```
 
-...and you are done. You can check if it is working by double clicking on `laptoplogger.py`.
+...and you are done. You can check if it is working by double clicking on `laptoplogger.py`, which is the main startup file.
 
 With a manual install, you will have to figure out how to auto-run on start.
 
