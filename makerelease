@@ -30,7 +30,7 @@ for DIR in ../connectordb/release/*/; do
     # ...aaand copy the final stuff
     cp README.md ${NEWDIR}
     cp LICENSE ${NEWDIR}
-    cp connectordb ${NEWDIR}
+    cp connectordb-desktop ${NEWDIR}
     
 done
 
@@ -38,7 +38,7 @@ cd ./release
 
 #Finally, add the windows-specific files to the windows release directories
 for DIR in *windows*; do
-    rm ${DIR}/connectordb
+    rm ${DIR}/connectordb-desktop
     cp ../wininstaller.nsi ${DIR}/
     cp ../windowsbuild.bat ${DIR}/
 done
