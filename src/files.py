@@ -6,9 +6,13 @@ import json
 def getDefaultFolderLocation():
     """ 
     By default, laptoplogger saves its data in ~/.local/share/connectordb on linux,
-    and in %APPDATA%/ConnectorDB on windows
+    in %APPDATA%/ConnectorDB on windows, and in ~/Library/Application Support/ConnectorDB on mac
     """
     filedir = os.path.join(os.path.expanduser("~"), ".local/share/connectordb")
+
+    # On Mac, save it in Library
+    if (platform.system()=="Darwin"):
+        return os.path.join(os.path.expanduser("~"), "Library/Application Support/ConnectorDB")
     # If on windows we save it in the appdata folder
     appdata = os.getenv("APPDATA")
     if appdata != "" and appdata is not None:
