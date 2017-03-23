@@ -86,7 +86,19 @@ Note: Python 3 is not supported on windows due to issues in libraries used to ga
 
 ### Mac
 
-Mac version is not ready yet: [see what still needs to be done](https://github.com/connectordb/connectordb-laptoplogger/issues/2)
+The Mac version is functional, but does not yet have any data-gathering. See [issue #4](https://github.com/connectordb/connectordb-laptoplogger/issues/2) for details on progress in data-gathering for mac.
+
+For the mac version, you can download the archive from [here](https://connectordb.io/download). You will then need to set up a couple dependencies:
+
+```bash
+brew install redis # required for bundled ConnectorDB server
+brew install pyqt5
+pip3 install apsw connectordb
+```
+
+You can then run ConnectorDB Desktop by double-clicking on `connectordb-desktop`. 
+
+You will want to run the script on login, which can be done using [these instructions](http://stackoverflow.com/questions/6442364/running-script-upon-login-mac/13372744#13372744).
 
 ## Headless
 

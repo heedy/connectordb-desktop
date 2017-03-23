@@ -2,4 +2,10 @@
 
 # This is the linux desktop version of ConnectorDB. It simply runs the laptoplogger.
 cd "${0%/*}/src"
-python laptoplogger.py
+
+if command -v python3 > /dev/null 2>&1; then
+    python3 laptoplogger.py
+else
+    python laptoplogger.py
+fi
+
