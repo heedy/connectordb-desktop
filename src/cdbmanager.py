@@ -89,9 +89,7 @@ class Manager(object):
 
     def start(self, out=sys.stdout):
         logging.info("Starting database at " + self.location)
-        # Unfortunately, we need to use --force, since oftentimes the database is not shut down correctly
-        # on OS exit
-        return self.runproc([self.cdb_executable, "start", self.location, "--force"], out)
+        return self.runproc([self.cdb_executable, "start", self.location], out)
 
     def stop(self, out=sys.stdout):
         logging.info("Stopping database at " + self.location)
