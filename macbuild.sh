@@ -27,7 +27,9 @@ cp LICENSE ${NEWDIR}
 cp connectordb-desktop ${NEWDIR}
 
 cd release
-echo .. ${NAME}.tar.gz
 
-tar -czf ${NAME}.tar.gz ${NAME}
+echo "Running PyInstaller"
+pyinstaller --windowed --icon=./src/resources/logo.ico -n "ConnectorDB Desktop" -y src/windowsapp.py
+# echo .. ${NAME}.tar.gz
+# tar -czf ${NAME}.tar.gz ${NAME}
 cd ..
